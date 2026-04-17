@@ -556,6 +556,10 @@ button:disabled {
     font-size: 1.5rem;
   }
 
+  .duration-grid {
+    grid-template-columns: 1fr;
+  }
+
   .roadmap-container {
     flex-direction: column;
   }
@@ -569,5 +573,14 @@ button:disabled {
   .day-btn {
     white-space: nowrap;
     min-width: 80px;
+  }
+
+  .duration-tabs {
+    flex-wrap: wrap;
+  }
+
+  .duration-tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
   }
 }
