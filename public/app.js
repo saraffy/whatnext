@@ -3,7 +3,15 @@ const storage = {
   // Goal management
   setGoal: (goal) => {
     localStorage.setItem('wdid_goal', goal);
-    storage.clearAll();
+    // Clear old roadmap/completion data for fresh start
+    const durations = ['day', 'week', 'month', 'year'];
+    durations.forEach(d => {
+      localStorage.removeItem(`wdid_roadmap_${d}`);
+      localStorage.removeItem(`wdid_completed_${d}`);
+      for (let i = 1; i <= 12; i++) {
+        localStorage.removeItem(`wdid_celebrated_${d}_${i}`);
+      }
+    });
   },
   getGoal: () => localStorage.getItem('wdid_goal'),
 
