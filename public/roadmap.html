@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Roadmap</title>
+  <title>WhatNext</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,15 +20,21 @@
       <span id="breadcrumbText"></span>
     </div>
 
-    <div class="roadmap-container">
-      <div class="days-sidebar" id="periodSidebar"></div>
-      <div class="roadmap-content">
-        <div class="day-theme" id="periodTheme"></div>
-        <div class="task-list" id="taskList"></div>
-        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-          <button class="next-day-button" id="nextBtn" onclick="goToNextPeriod()">Next →</button>
-          <button class="stuck-button" onclick="showStuckMessage()">I'm Stuck</button>
-        </div>
+    <div class="calendar-section">
+      <div class="calendar-header">
+        <span id="calendarLabel">Roadmap Overview</span>
+        <button id="zoomOutBtn" style="display:none; color: #4f8ef7; cursor: pointer; background: none; border: none; font-size: 0.9rem;">← Zoom Out</button>
+      </div>
+      <div class="period-calendar" id="periodCalendar"></div>
+    </div>
+
+    <div class="roadmap-content">
+      <div class="day-theme" id="periodTheme"></div>
+      <div class="task-list" id="taskList"></div>
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button class="next-day-button" id="zoomInBtn" style="display:none;">🔍 Zoom In</button>
+        <button class="next-day-button" id="nextBtn" onclick="goToNextPeriod()">Next →</button>
+        <button class="stuck-button" onclick="showStuckMessage()">I'm Stuck</button>
       </div>
     </div>
 
@@ -130,40 +136,71 @@
       const goals = storage.getGoalsList();
       const activeId = storage.getActiveGoalId();
       const activeGoal = goals.find(g => g.id === activeId);
-      currentDuration = storage.getCurrentDuration();
+      const allDurations = ['1d', '3d', '1w', '2w', '1m', '3m', '6m', '1y', '2y', '5y'];
 
       if (!activeGoal) {
         window.location.href = 'index.html';
         return;
       }
 
+      currentDuration = storage.getCurrentDuration();
       roadmap = storage.getRoadmapForDuration(currentDuration);
 
       if (!roadmap) {
-        window.location.href = 'index.html';
+        for (const duration of allDurations) {
+          const candidate = storage.getRoadmapForDuration(duration);
+          if (candidate) {
+            currentDuration = duration;
+            roadmap = candidate;
+            storage.setCurrentDuration(duration);
+            break;
+          }
+        }
+      }
+
+      if (!roadmap) {
+        window.location.href = 'duration.html';
         return;
       }
 
       document.getElementById('pathwayDisplay').textContent = `${activeGoal.goal} • Duration: ${currentDuration}`;
-      renderPeriodButtons();
+      renderCalendar();
       renderPeriod(currentPeriod);
     }
 
-    function renderPeriodButtons() {
-      const sidebar = document.getElementById('periodSidebar');
-      const currentRoadmap = drillDownLevel === 'top' ? roadmap : drillDownRoadmap;
-      const labels = getPeriodLabels(drillDownLevel === 'top' ? currentDuration : getDrillDownDuration());
+    function getCalendarColumns(duration) {
+      const columnMap = {
+        '1d': 3, '3d': 3, '1w': 7, '2w': 7, '1m': 4, '3m': 4, '6m': 6, '1y': 4, '2y': 6, '5y': 5
+      };
+      return columnMap[duration] || 7;
+    }
 
-      sidebar.innerHTML = currentRoadmap.map((period, i) => `
-        <button class="day-btn ${period.period === currentPeriod ? 'active' : ''}" onclick="switchPeriod(${period.period})">
-          ${labels[i] || `Period ${i + 1}`}
-        </button>
-      `).join('');
+    function renderCalendar() {
+      const calendar = document.getElementById('periodCalendar');
+      const currentRoadmap = drillDownLevel === 'top' ? roadmap : drillDownRoadmap;
+      const duration = drillDownLevel === 'top' ? currentDuration : getDrillDownDuration();
+      const labels = getPeriodLabels(duration);
+      const cols = getCalendarColumns(duration);
+
+      calendar.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      calendar.innerHTML = currentRoadmap.map((period, i) => {
+        const isActive = period.period === currentPeriod;
+        const isComplete = allTasksCompleted(period.period);
+        return `
+          <div class="cal-cell ${isActive ? 'active' : ''} ${isComplete ? 'done' : ''}" onclick="switchPeriod(${period.period})">
+            <div class="cal-cell-label">${labels[i] || `Period ${i + 1}`}</div>
+            ${isComplete ? '<div class="cal-cell-check">✓</div>' : ''}
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('zoomOutBtn').style.display = drillDownLevel === 'top' ? 'none' : 'block';
+      document.getElementById('zoomOutBtn').onclick = () => zoomOut();
     }
 
     window.switchPeriod = (period) => {
       currentPeriod = period;
-      renderPeriodButtons();
+      renderCalendar();
       renderPeriod(period);
     };
 
@@ -204,17 +241,11 @@
         </div>
       `).join('');
 
-      // Show drill-down button if applicable
-      if (canDrillDown() && currentRoadmap.length > 0) {
-        const drillBtn = document.createElement('button');
-        drillBtn.type = 'button';
-        drillBtn.className = 'next-day-button';
-        drillBtn.textContent = 'Zoom In →';
-        drillBtn.onclick = () => drillDown(period, periodData.label);
-        const lastTask = taskList.parentElement.querySelector('button.next-day-button');
-        if (lastTask) {
-          lastTask.parentElement.insertBefore(drillBtn, lastTask);
-        }
+      // Update zoom button visibility
+      const zoomBtn = document.getElementById('zoomInBtn');
+      if (zoomBtn) {
+        zoomBtn.style.display = canDrillDown() ? 'block' : 'none';
+        zoomBtn.onclick = () => drillDown(currentPeriod, periodData.label);
       }
 
       // Check if all tasks completed
@@ -274,8 +305,11 @@
     };
 
     window.drillDown = async (parentPeriod, parentLabel) => {
-      const goal = storage.getGoal();
-      const braindump = localStorage.getItem('wdid_braindump') || '';
+      const goals = storage.getGoalsList();
+      const activeId = storage.getActiveGoalId();
+      const activeGoal = goals.find(g => g.id === activeId);
+      const goal = activeGoal ? activeGoal.goal : '';
+      const braindump = localStorage.getItem('wdid_' + activeId + '_braindump') || '';
       const drillDuration = getDrillDownDuration();
 
       if (!drillDuration) return;
@@ -291,7 +325,7 @@
         currentPeriod = 1;
 
         renderBreadcrumb(parentLabel);
-        renderPeriodButtons();
+        renderCalendar();
         renderPeriod(currentPeriod);
       } catch (err) {
         console.error('Drill-down error:', err);
@@ -307,7 +341,7 @@
       const breadcrumb = document.getElementById('breadcrumb');
       breadcrumb.style.display = 'none';
 
-      renderPeriodButtons();
+      renderCalendar();
       renderPeriod(currentPeriod);
     };
 

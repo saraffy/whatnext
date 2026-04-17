@@ -260,43 +260,74 @@ button:disabled {
   border-bottom-color: #4f8ef7;
 }
 
-/* Roadmap layout */
-.roadmap-container {
-  display: flex;
-  gap: 1.5rem;
+/* Calendar section */
+.calendar-section {
   margin-bottom: 2rem;
 }
 
-.days-sidebar {
+.calendar-header {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 100px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: #999;
+  font-size: 0.95rem;
 }
 
-.day-btn {
-  padding: 0.75rem;
+.period-calendar {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.cal-cell {
   background: #1a1a1a;
   border: 2px solid #333;
   border-radius: 6px;
-  color: #aaa;
+  padding: 1rem;
   cursor: pointer;
-  font-size: 0.9rem;
   transition: all 0.2s;
+  text-align: center;
+  position: relative;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.day-btn.active {
+.cal-cell:hover {
+  border-color: #4f8ef7;
+}
+
+.cal-cell.active {
   background: #4f8ef7;
   border-color: #4f8ef7;
   color: #fff;
 }
 
-.day-btn:hover {
-  border-color: #4f8ef7;
+.cal-cell.active .cal-cell-label {
+  color: #fff;
+}
+
+.cal-cell.done {
+  border-color: #6bcf7f;
+}
+
+.cal-cell-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #aaa;
+}
+
+.cal-cell-check {
+  font-size: 1.2rem;
+  color: #6bcf7f;
+  margin-top: 0.25rem;
 }
 
 .roadmap-content {
-  flex: 1;
+  margin-top: 2rem;
 }
 
 .day-theme {
@@ -742,19 +773,18 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
-  .roadmap-container {
-    flex-direction: column;
+  .period-calendar {
+    gap: 0.5rem;
   }
 
-  .days-sidebar {
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
+  .cal-cell {
+    padding: 0.75rem;
+    min-height: 50px;
+    font-size: 0.8rem;
   }
 
-  .day-btn {
-    white-space: nowrap;
-    min-width: 80px;
+  .cal-cell-label {
+    font-size: 0.75rem;
   }
 
   .duration-tabs {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>What Do I Do Next?</title>
+  <title>WhatNext</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,15 +11,8 @@
     <div style="position: absolute; top: 1rem; right: 1rem;">
       <button id="logoutBtn" onclick="logout()" style="background: #666; padding: 0.5rem 1rem; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 0.9rem;">Logout</button>
     </div>
-    <h1>What do you want to do or become?</h1>
-    <p class="subtitle">Turn your ambition into a structured 7-day action plan.</p>
-
-    <div class="examples">
-      <span>Examples:</span>
-      <span style="color: #4f8ef7;">Start a music career</span> •
-      <span style="color: #4f8ef7;">Get into AI</span> •
-      <span style="color: #4f8ef7;">Build a startup</span>
-    </div>
+    <h1 id="tagline"></h1>
+    <p class="subtitle">Turn your ambition into a structured action plan.</p>
 
     <input type="text" id="goalInput" placeholder="Your goal or ambition...">
 
@@ -29,6 +22,12 @@
       <button type="button" class="quick-goal-chip" onclick="quickStart('Learn how to use AI')">🤖 Learn AI</button>
       <button type="button" class="quick-goal-chip" onclick="quickStart('Start running regularly')">🏃 Start running</button>
       <button type="button" class="quick-goal-chip" onclick="quickStart('Build a startup')">🚀 Build a startup</button>
+      <button type="button" class="quick-goal-chip" onclick="quickStart('Start a music career')">🎵 Start a music career</button>
+      <button type="button" class="quick-goal-chip" onclick="quickStart('Get fit')">💪 Get fit</button>
+      <button type="button" class="quick-goal-chip" onclick="quickStart('Write a book')">✍️ Write a book</button>
+      <button type="button" class="quick-goal-chip" onclick="quickStart('Learn investing')">💰 Learn investing</button>
+      <button type="button" class="quick-goal-chip" onclick="quickStart('Build a website')">🌐 Build a website</button>
+      <button type="button" class="quick-goal-chip" onclick="quickStart('Build a daily habit')">🧘 Build a daily habit</button>
     </div>
 
     <button id="submitBtn">Generate Pathways</button>
@@ -50,6 +49,16 @@
         userLoggedIn = true;
       }
     });
+
+    // Rotating taglines
+    const taglines = [
+      "What's the one thing you've been putting off?",
+      "If you could become anything, what would it be?",
+      "What would you do if you knew you couldn't fail?",
+      "What does the best version of you look like?",
+      "What's the dream you haven't acted on yet?"
+    ];
+    document.getElementById('tagline').textContent = taglines[Math.floor(Math.random() * taglines.length)];
 
     // Logout function
     window.logout = async function() {
