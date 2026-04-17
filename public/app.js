@@ -142,4 +142,13 @@ const api = {
     if (!res.ok) throw new Error('Failed to generate roadmap');
     return res.json();
   },
+  getTaskHelp: async (goal, task, taskType) => {
+    const res = await fetch('/api/task-help', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ goal, task, taskType }),
+    });
+    if (!res.ok) throw new Error('Failed to get task help');
+    return res.json();
+  },
 };

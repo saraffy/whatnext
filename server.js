@@ -11,6 +11,31 @@ const client = new Anthropic({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const TASK_HELP_PROMPT = `You are a task assistance engine. Given a goal, task, and task type, provide:
+1. Step-by-step breakdown (3-5 concrete, actionable steps)
+2. 3-4 resources with searchable queries (avoid hallucinated URLs)
+
+Each resource should have: title, type (youtube|article|tool|course), description, and a search query.
+
+Return ONLY valid JSON with no other text.
+
+Schema:
+{
+  "steps": ["Step 1: ...", "Step 2: ..."],
+  "resources": [
+    {
+      "title": "string",
+      "type": "string (youtube|article|tool|course)",
+      "description": "string",
+      "searchQuery": "string (for Google/YouTube search)"
+    }
+  ]
+}
+
+Goal: {goal}
+Task: {task}
+Task Type: {taskType}`;
+
 const ANALYZE_GOAL_PROMPT = `You are a goal analysis engine. Given a user's goal, provide:
 1. A concise 2-3 sentence summary of the goal
 2. One powerful encouraging sentence to motivate the user
@@ -315,6 +340,44 @@ app.post('/api/roadmap', async (req, res) => {
   } catch (error) {
     console.error('Roadmap generation error:', error);
     res.status(500).json({ error: 'Failed to generate roadmap' });
+  }
+});
+
+app.post('/api/task-help', async (req, res) => {
+  try {
+    const { goal, task, taskType } = req.body;
+    if (!goal || !task) {
+      return res.status(400).json({ error: 'Goal and task are required' });
+    }
+
+    const prompt = TASK_HELP_PROMPT
+      .replace('{goal}', goal)
+      .replace('{task}', task)
+      .replace('{taskType}', taskType || 'general');
+
+    const message = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1024,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+    });
+
+    const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+
+    if (!jsonMatch) {
+      throw new Error('Invalid JSON response from Claude');
+    }
+
+    const result = JSON.parse(jsonMatch[0]);
+    res.json(result);
+  } catch (error) {
+    console.error('Task help error:', error);
+    res.status(500).json({ error: 'Failed to get task help' });
   }
 });
 

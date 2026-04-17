@@ -26,6 +26,17 @@
       </div>
     </div>
 
+    <!-- Task Help Panel -->
+    <div id="helpPanel" class="help-panel">
+      <div class="help-panel-header">
+        <h3>Get Help</h3>
+        <button class="help-close" onclick="closeHelpPanel()">&times;</button>
+      </div>
+      <div class="help-panel-content" id="helpContent">
+        <div class="spinner"></div> Loading...
+      </div>
+    </div>
+
     <div id="error" class="error" style="display: none;"></div>
     <div id="confetti"></div>
   </div>
@@ -172,6 +183,7 @@
               <span class="task-type">${task.type}</span>
             </div>
           </div>
+          <button type="button" class="help-task-btn" onclick="showHelpPanel('${task.task}', '${task.type}', ${period}, ${i})">?</button>
         </div>
       `).join('');
 
@@ -256,6 +268,61 @@
     window.goToHome = () => {
       storage.clearAll();
       window.location.href = 'index.html';
+    };
+
+    window.showHelpPanel = async (task, taskType, period, index) => {
+      const helpPanel = document.getElementById('helpPanel');
+      const helpContent = document.getElementById('helpContent');
+      const cacheKey = `help_${task}`;
+
+      // Check session cache first
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        helpContent.innerHTML = cached;
+        helpPanel.classList.add('open');
+        return;
+      }
+
+      helpContent.innerHTML = '<div class="spinner" style="margin: 1rem auto;"></div> Loading help...';
+      helpPanel.classList.add('open');
+
+      try {
+        const goal = storage.getGoal();
+        const help = await api.getTaskHelp(goal, task, taskType);
+
+        let html = '<div class="help-steps"><strong>Steps:</strong><ol>';
+        help.steps.forEach(step => {
+          html += `<li>${step}</li>`;
+        });
+        html += '</ol></div>';
+
+        html += '<div class="help-resources"><strong>Resources:</strong>';
+        help.resources.forEach(r => {
+          const icon = r.type === 'youtube' ? '▶️' : r.type === 'article' ? '📄' : r.type === 'course' ? '🎓' : '🛠️';
+          html += `
+            <div class="resource-card">
+              <span>${icon}</span>
+              <div>
+                <div class="resource-title">${r.title}</div>
+                <div class="resource-desc">${r.description}</div>
+                <a href="https://www.google.com/search?q=${encodeURIComponent(r.searchQuery)}" target="_blank" class="resource-link">Search →</a>
+              </div>
+            </div>
+          `;
+        });
+        html += '</div>';
+
+        helpContent.innerHTML = html;
+        sessionStorage.setItem(cacheKey, html);
+      } catch (err) {
+        console.error('Help fetch error:', err);
+        helpContent.innerHTML = '<p style="color: #ff6b6b;">Failed to load help. Try again.</p>';
+      }
+    };
+
+    window.closeHelpPanel = () => {
+      const helpPanel = document.getElementById('helpPanel');
+      helpPanel.classList.remove('open');
     };
 
     // Close modal on outside click

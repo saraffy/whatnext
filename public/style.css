@@ -320,6 +320,29 @@ button:disabled {
   border-radius: 6px;
   border: 1px solid #333;
   align-items: flex-start;
+  position: relative;
+}
+
+.help-task-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  background: #333;
+  color: #aaa;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid #444;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  margin-top: 2px;
+}
+
+.help-task-btn:hover {
+  background: #4f8ef7;
+  border-color: #4f8ef7;
+  color: #fff;
 }
 
 .task-item input[type="checkbox"] {
@@ -518,6 +541,131 @@ button:disabled {
   to {
     opacity: 0;
   }
+}
+
+/* Help Panel */
+.help-panel {
+  position: fixed;
+  right: -400px;
+  top: 0;
+  width: 400px;
+  height: 100vh;
+  background: #1a1a1a;
+  border-left: 2px solid #333;
+  z-index: 9998;
+  transition: right 0.3s ease;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.help-panel.open {
+  right: 0;
+}
+
+.help-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid #333;
+}
+
+.help-panel-header h3 {
+  margin: 0;
+  color: #4f8ef7;
+  font-size: 1.2rem;
+}
+
+.help-close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: #333;
+  border: none;
+  color: #aaa;
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.help-close:hover {
+  background: #444;
+}
+
+.help-panel-content {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.help-steps {
+  margin-bottom: 1.5rem;
+}
+
+.help-steps strong {
+  color: #e8e8e8;
+  font-size: 0.95rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.help-steps ol {
+  margin-left: 1.5rem;
+  color: #ccc;
+  line-height: 1.8;
+}
+
+.help-steps li {
+  margin-bottom: 0.5rem;
+}
+
+.help-resources strong {
+  color: #e8e8e8;
+  font-size: 0.95rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.resource-card {
+  display: flex;
+  gap: 0.75rem;
+  background: #222;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  border: 1px solid #333;
+}
+
+.resource-card span {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.resource-title {
+  color: #e8e8e8;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.resource-desc {
+  color: #999;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.resource-link {
+  color: #4f8ef7;
+  font-size: 0.8rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.resource-link:hover {
+  text-decoration: underline;
 }
 
 /* Modal */
