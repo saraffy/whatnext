@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Goal Summary</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Your Goal</h1>
+
+    <div class="goal-summary-box">
+      <div class="goal-text" id="goalText"></div>
+      <div class="summary-text" id="summaryText"></div>
+      <div class="encouragement-text" id="encouragementText"></div>
+    </div>
+
+    <button id="exploreBtn" class="next-day-button">Explore Pathways →</button>
+
+    <div id="error" class="error" style="display: none;"></div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    function loadGoalSummary() {
+      const goal = storage.getGoal();
+      const { summary, encouragement } = storage.getSummary();
+      const pathways = storage.getPathways();
+
+      if (!goal || !summary || !encouragement || !pathways) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      document.getElementById('goalText').textContent = goal;
+      document.getElementById('summaryText').textContent = summary;
+      document.getElementById('encouragementText').textContent = encouragement;
+    }
+
+    document.getElementById('exploreBtn').addEventListener('click', () => {
+      window.location.href = 'pathways.html';
+    });
+
+    loadGoalSummary();
+  </script>
+</body>
+</html>

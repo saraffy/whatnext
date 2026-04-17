@@ -39,15 +39,16 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="spinner"></span>Generating pathways...';
+      submitBtn.innerHTML = '<span class="spinner"></span>Analyzing your goal...';
       errorDiv.style.display = 'none';
 
       try {
         storage.setGoal(goal);
-        await api.generatePathways(goal);
-        window.location.href = 'pathways.html';
+        const data = await api.analyzeGoal(goal);
+        storage.setSummaryData(data.summary, data.encouragement, data.pathways);
+        window.location.href = 'goal-summary.html';
       } catch (err) {
-        showError('Failed to generate pathways. Please try again.');
+        showError('Failed to analyze goal. Please try again.');
         console.error(err);
         submitBtn.disabled = false;
         submitBtn.innerHTML = 'Generate Pathways';

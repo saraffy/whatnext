@@ -3,21 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your 7-Day Roadmap</title>
+  <title>Your Roadmap</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>Your 7-Day Roadmap</h1>
+    <h1>Your Roadmap</h1>
     <p class="subtitle" id="pathwayDisplay"></p>
 
+    <!-- Duration tabs -->
+    <div class="duration-tabs" id="durationTabs"></div>
+
     <div class="roadmap-container">
-      <div class="days-sidebar" id="daysBtns"></div>
+      <div class="days-sidebar" id="periodSidebar"></div>
       <div class="roadmap-content">
-        <div class="day-theme" id="dayTheme"></div>
+        <div class="day-theme" id="periodTheme"></div>
         <div class="task-list" id="taskList"></div>
         <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-          <button class="next-day-button" id="nextDayBtn" onclick="goToNextDay()">Next Day →</button>
+          <button class="next-day-button" id="nextBtn" onclick="goToNextPeriod()">Next →</button>
           <button class="stuck-button" onclick="showStuckMessage()">I'm Stuck</button>
         </div>
       </div>
@@ -53,7 +56,7 @@
   <div id="accomplishedModal" class="modal" style="display: none;">
     <div class="modal-content" style="text-align: center;">
       <h2 style="font-size: 2rem; margin-bottom: 1rem;">🎉 Goal Accomplished! 🎉</h2>
-      <p style="font-size: 1.1rem; margin-bottom: 2rem;">You've completed your 7-day roadmap!</p>
+      <p style="font-size: 1.1rem; margin-bottom: 2rem;">You've completed your roadmap!</p>
       <p style="color: #999; margin-bottom: 2rem;">Ready for the next one?</p>
       <button onclick="goToHome()" style="background: #4f8ef7; padding: 1rem 2rem; font-size: 1rem; border-radius: 8px;">Start New Goal</button>
     </div>
@@ -61,61 +64,105 @@
 
   <script src="app.js"></script>
   <script>
-    let currentDay = 1;
-    let roadmap = [];
+    let currentDuration = 'week';
+    let currentPeriod = 1;
+    let roadmaps = {}; // { day: [...], week: [...], month: [...], year: [...] }
+
+    const durationLabels = {
+      day: ['Morning', 'Afternoon', 'Evening'],
+      week: Array.from({ length: 7 }, (_, i) => `Day ${i + 1}`),
+      month: Array.from({ length: 4 }, (_, i) => `Week ${i + 1}`),
+      year: Array.from({ length: 12 }, (_, i) => `Month ${i + 1}`),
+    };
 
     function loadRoadmap() {
       const goal = storage.getGoal();
       const pathway = storage.getPathway();
-      const savedRoadmap = storage.getRoadmap();
+      currentDuration = storage.getCurrentDuration();
 
-      if (!goal || !pathway || !savedRoadmap) {
+      if (!goal || !pathway) {
         window.location.href = 'index.html';
         return;
       }
 
-      roadmap = savedRoadmap;
-      document.getElementById('pathwayDisplay').textContent = `Pathway: ${pathway}`;
+      // Load all roadmaps
+      roadmaps.day = storage.getRoadmapForDuration('day');
+      roadmaps.week = storage.getRoadmapForDuration('week');
+      roadmaps.month = storage.getRoadmapForDuration('month');
+      roadmaps.year = storage.getRoadmapForDuration('year');
 
-      renderDayButtons();
-      renderDay(currentDay);
+      if (!roadmaps[currentDuration]) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      document.getElementById('pathwayDisplay').textContent = `Pathway: ${pathway.title}`;
+      renderDurationTabs();
+      renderPeriodButtons();
+      renderPeriod(currentPeriod);
     }
 
-    function renderDayButtons() {
-      const daysBtns = document.getElementById('daysBtns');
-      daysBtns.innerHTML = roadmap.map((day) => `
-        <button class="day-btn ${day.day === currentDay ? 'active' : ''}" onclick="switchDay(${day.day})">
-          Day ${day.day}
+    function renderDurationTabs() {
+      const tabsDiv = document.getElementById('durationTabs');
+      const durations = ['day', 'week', 'month', 'year'];
+      const labels = { day: '1 Day', week: '1 Week', month: '1 Month', year: '1 Year' };
+
+      tabsDiv.innerHTML = durations.map((d) => `
+        <button class="duration-tab ${d === currentDuration ? 'active' : ''}" onclick="switchDuration('${d}')">
+          ${labels[d]}
         </button>
       `).join('');
     }
 
-    window.switchDay = (day) => {
-      currentDay = day;
-      renderDayButtons();
-      renderDay(day);
+    window.switchDuration = (duration) => {
+      currentDuration = duration;
+      currentPeriod = 1;
+      storage.setCurrentDuration(duration);
+      renderDurationTabs();
+      renderPeriodButtons();
+      renderPeriod(currentPeriod);
     };
 
-    function allTasksCompleted(dayNum) {
-      const day = roadmap.find((d) => d.day === dayNum);
-      if (!day) return false;
-      return day.tasks.every((_, i) => storage.isTaskCompleted(dayNum, i));
+    function renderPeriodButtons() {
+      const sidebar = document.getElementById('periodSidebar');
+      const roadmap = roadmaps[currentDuration];
+      const labels = durationLabels[currentDuration];
+
+      sidebar.innerHTML = roadmap.map((period, i) => `
+        <button class="day-btn ${period.period === currentPeriod ? 'active' : ''}" onclick="switchPeriod(${period.period})">
+          ${labels[i]}
+        </button>
+      `).join('');
     }
 
-    function renderDay(dayNum) {
-      const day = roadmap.find((d) => d.day === dayNum);
-      if (!day) return;
+    window.switchPeriod = (period) => {
+      currentPeriod = period;
+      renderPeriodButtons();
+      renderPeriod(period);
+    };
 
-      document.getElementById('dayTheme').textContent = day.theme;
+    function allTasksCompleted(period) {
+      const roadmap = roadmaps[currentDuration];
+      const periodData = roadmap.find((p) => p.period === period);
+      if (!periodData) return false;
+      return periodData.tasks.every((_, i) => storage.isTaskCompletedForDuration(currentDuration, period, i));
+    }
+
+    function renderPeriod(period) {
+      const roadmap = roadmaps[currentDuration];
+      const periodData = roadmap.find((p) => p.period === period);
+      if (!periodData) return;
+
+      document.getElementById('periodTheme').textContent = periodData.theme;
 
       const taskList = document.getElementById('taskList');
-      taskList.innerHTML = day.tasks.map((task, i) => `
+      taskList.innerHTML = periodData.tasks.map((task, i) => `
         <div class="task-item">
           <input
             type="checkbox"
-            id="task-${dayNum}-${i}"
-            ${storage.isTaskCompleted(dayNum, i) ? 'checked' : ''}
-            onchange="toggleTask(${dayNum}, ${i})"
+            id="task-${period}-${i}"
+            ${storage.isTaskCompletedForDuration(currentDuration, period, i) ? 'checked' : ''}
+            onchange="toggleTask(${period}, ${i})"
           >
           <div class="task-text">
             ${task.task}
@@ -128,18 +175,18 @@
       `).join('');
 
       // Check if all tasks completed
-      if (allTasksCompleted(dayNum)) {
-        triggerCelebration(dayNum);
+      if (allTasksCompleted(period)) {
+        triggerCelebration(period);
       }
     }
 
-    function triggerCelebration(dayNum) {
-      const confettiKey = `wdid_celebrated_day_${dayNum}`;
-      if (localStorage.getItem(confettiKey)) return; // Only celebrate once per day
+    function triggerCelebration(period) {
+      const confettiKey = `wdid_celebrated_${currentDuration}_${period}`;
+      if (localStorage.getItem(confettiKey)) return;
 
       localStorage.setItem(confettiKey, 'true');
       createConfetti();
-      showCelebrationMessage(dayNum);
+      showCelebrationMessage(period);
     }
 
     function createConfetti(count = 150) {
@@ -159,12 +206,12 @@
       }, 3000);
     }
 
-    function showCelebrationMessage(dayNum) {
+    function showCelebrationMessage(period) {
       const messages = [
-        '🎉 Day completed! You\'re crushing it!',
+        '🎉 Period completed! You\'re crushing it!',
         '⭐ Amazing work! You\'re building momentum!',
         '🚀 Unstoppable! Keep this energy going!',
-        '💯 Perfect day! You\'re a machine!',
+        '💯 Perfect! You\'re a machine!',
         '✨ You\'re on fire! Keep going!'
       ];
       const msg = messages[Math.floor(Math.random() * messages.length)];
@@ -177,9 +224,9 @@
       setTimeout(() => celebration.remove(), 3000);
     }
 
-    window.toggleTask = (day, index) => {
-      storage.toggleTask(day, index);
-      renderDay(currentDay);
+    window.toggleTask = (period, index) => {
+      storage.toggleTaskForDuration(currentDuration, period, index);
+      renderPeriod(currentPeriod);
     };
 
     window.showStuckMessage = () => {
@@ -190,11 +237,13 @@
       document.getElementById('stuckModal').style.display = 'none';
     };
 
-    window.goToNextDay = () => {
-      if (currentDay < 7) {
-        switchDay(currentDay + 1);
+    window.goToNextPeriod = () => {
+      const roadmap = roadmaps[currentDuration];
+      const maxPeriod = roadmap.length;
+
+      if (currentPeriod < maxPeriod) {
+        switchPeriod(currentPeriod + 1);
       } else {
-        // Day 7 - show goal accomplished
         createConfetti(200);
         showGoalAccomplished();
       }
@@ -205,14 +254,7 @@
     }
 
     window.goToHome = () => {
-      // Clear all data for fresh start
-      localStorage.removeItem('wdid_goal');
-      localStorage.removeItem('wdid_pathway');
-      localStorage.removeItem('wdid_roadmap');
-      localStorage.removeItem('wdid_completed');
-      for (let i = 1; i <= 7; i++) {
-        localStorage.removeItem(`wdid_celebrated_day_${i}`);
-      }
+      storage.clearAll();
       window.location.href = 'index.html';
     };
 

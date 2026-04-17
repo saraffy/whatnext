@@ -21,22 +21,17 @@
     const goalDisplay = document.getElementById('goalDisplay');
     const errorDiv = document.getElementById('error');
 
-    async function loadPathways() {
+    function loadPathways() {
       const goal = storage.getGoal();
-      if (!goal) {
+      const pathways = storage.getPathways();
+
+      if (!goal || !pathways) {
         window.location.href = 'index.html';
         return;
       }
 
       goalDisplay.textContent = `Goal: ${goal}`;
-
-      try {
-        const data = await api.generatePathways(goal);
-        renderPathways(data.pathways);
-      } catch (err) {
-        showError('Failed to load pathways. Please try again.');
-        console.error(err);
-      }
+      renderPathways(pathways);
     }
 
     function renderPathways(pathways) {
@@ -49,33 +44,11 @@
       `).join('');
     }
 
-    window.selectPathway = async (index) => {
-      const goal = storage.getGoal();
-
-      // Show loading state
-      pathwaysContainer.innerHTML = `
-        <div class="loading-container">
-          <div class="spinner"></div>
-          Creating your 7-day roadmap...
-        </div>
-      `;
-
-      try {
-        const data = await api.generatePathways(goal);
-        const pathway = data.pathways[index];
-        storage.setPathway(pathway.title);
-
-        // Generate roadmap
-        const roadmapData = await api.generateRoadmap(goal, pathway.title);
-        storage.setRoadmap(roadmapData.roadmap);
-
-        window.location.href = 'roadmap.html';
-      } catch (err) {
-        showError('Failed to generate roadmap. Please try again.');
-        console.error(err);
-        // Restore pathways on error
-        loadPathways();
-      }
+    window.selectPathway = (index) => {
+      const pathways = storage.getPathways();
+      const pathway = pathways[index];
+      storage.setPathway(pathway.title);
+      window.location.href = 'duration.html';
     };
 
     function showError(msg) {

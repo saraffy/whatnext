@@ -84,6 +84,36 @@ button:disabled {
   margin-right: 0.5rem;
 }
 
+/* Goal summary box */
+.goal-summary-box {
+  background: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.goal-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #4f8ef7;
+  margin-bottom: 1rem;
+}
+
+.summary-text {
+  color: #ccc;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.encouragement-text {
+  color: #6bcf7f;
+  font-size: 1rem;
+  font-weight: 600;
+  font-style: italic;
+}
+
 /* Pathway cards */
 .pathways-grid {
   display: grid;
@@ -122,6 +152,78 @@ button:disabled {
 .pathway-description {
   color: #aaa;
   font-size: 0.95rem;
+}
+
+/* Duration cards */
+.duration-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.duration-card {
+  background: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.duration-card:hover {
+  border-color: #4f8ef7;
+  background: #222;
+  transform: translateY(-2px);
+}
+
+.duration-emoji {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.duration-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #e8e8e8;
+}
+
+.duration-description {
+  color: #aaa;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Duration tabs */
+.duration-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #333;
+}
+
+.duration-tab {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #aaa;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.duration-tab:hover {
+  color: #4f8ef7;
+}
+
+.duration-tab.active {
+  color: #4f8ef7;
+  border-bottom-color: #4f8ef7;
 }
 
 /* Roadmap layout */

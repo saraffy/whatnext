@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Duration</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Choose Your Roadmap Duration</h1>
+    <p class="subtitle">How much time do you have to dedicate to this goal?</p>
+
+    <div class="duration-grid" id="durationGrid"></div>
+
+    <div id="error" class="error" style="display: none;"></div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const durations = [
+      {
+        duration: 'day',
+        title: '1 Day',
+        description: 'Quick win with morning, afternoon, and evening blocks',
+        emoji: '⚡',
+      },
+      {
+        duration: 'week',
+        title: '1 Week',
+        description: 'Balanced 7-day journey with daily themes',
+        emoji: '📅',
+      },
+      {
+        duration: 'month',
+        title: '1 Month',
+        description: '4 weeks of focused work on major milestones',
+        emoji: '🎯',
+      },
+      {
+        duration: 'year',
+        title: '1 Year',
+        description: 'Ambitious 12-month roadmap with deep progress',
+        emoji: '🚀',
+      },
+    ];
+
+    function loadDuration() {
+      const goal = storage.getGoal();
+      const pathway = storage.getPathway();
+
+      if (!goal || !pathway) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      renderDurations();
+    }
+
+    function renderDurations() {
+      const durationGrid = document.getElementById('durationGrid');
+      durationGrid.innerHTML = durations.map((d) => `
+        <div class="duration-card" onclick="selectDuration('${d.duration}')">
+          <span class="duration-emoji">${d.emoji}</span>
+          <div class="duration-title">${d.title}</div>
+          <div class="duration-description">${d.description}</div>
+        </div>
+      `).join('');
+    }
+
+    window.selectDuration = async (duration) => {
+      const goal = storage.getGoal();
+      const pathway = storage.getPathway().title;
+      const errorDiv = document.getElementById('error');
+      const durationGrid = document.getElementById('durationGrid');
+
+      // Show loading state
+      durationGrid.innerHTML = `
+        <div class="loading-container">
+          <div class="spinner"></div>
+          Generating all roadmaps...
+        </div>
+      `;
+      errorDiv.style.display = 'none';
+
+      try {
+        storage.setCurrentDuration(duration);
+
+        // Generate all 4 roadmaps in parallel
+        const roadmaps = await Promise.all([
+          api.generateRoadmap(goal, pathway, 'day'),
+          api.generateRoadmap(goal, pathway, 'week'),
+          api.generateRoadmap(goal, pathway, 'month'),
+          api.generateRoadmap(goal, pathway, 'year'),
+        ]);
+
+        // Store all roadmaps
+        storage.setRoadmapForDuration('day', roadmaps[0].roadmap);
+        storage.setRoadmapForDuration('week', roadmaps[1].roadmap);
+        storage.setRoadmapForDuration('month', roadmaps[2].roadmap);
+        storage.setRoadmapForDuration('year', roadmaps[3].roadmap);
+
+        window.location.href = 'roadmap.html';
+      } catch (err) {
+        errorDiv.textContent = 'Failed to generate roadmaps. Please try again.';
+        errorDiv.style.display = 'block';
+        console.error(err);
+        // Restore durations on error
+        renderDurations();
+      }
+    };
+
+    loadDuration();
+  </script>
+</body>
+</html>
