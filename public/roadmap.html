@@ -16,7 +16,10 @@
       <div class="roadmap-content">
         <div class="day-theme" id="dayTheme"></div>
         <div class="task-list" id="taskList"></div>
-        <button class="stuck-button" onclick="showStuckMessage()">I'm Stuck</button>
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+          <button class="next-day-button" id="nextDayBtn" onclick="goToNextDay()">Next Day →</button>
+          <button class="stuck-button" onclick="showStuckMessage()">I'm Stuck</button>
+        </div>
       </div>
     </div>
 
@@ -43,6 +46,16 @@
           </p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Goal Accomplished Modal -->
+  <div id="accomplishedModal" class="modal" style="display: none;">
+    <div class="modal-content" style="text-align: center;">
+      <h2 style="font-size: 2rem; margin-bottom: 1rem;">🎉 Goal Accomplished! 🎉</h2>
+      <p style="font-size: 1.1rem; margin-bottom: 2rem;">You've completed your 7-day roadmap!</p>
+      <p style="color: #999; margin-bottom: 2rem;">Ready for the next one?</p>
+      <button onclick="goToHome()" style="background: #4f8ef7; padding: 1rem 2rem; font-size: 1rem; border-radius: 8px;">Start New Goal</button>
     </div>
   </div>
 
@@ -129,11 +142,11 @@
       showCelebrationMessage(dayNum);
     }
 
-    function createConfetti() {
+    function createConfetti(count = 150) {
       const confettiContainer = document.getElementById('confetti');
       confettiContainer.innerHTML = '';
 
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < count; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti-piece';
         confetti.style.left = Math.random() * 100 + '%';
@@ -177,11 +190,41 @@
       document.getElementById('stuckModal').style.display = 'none';
     };
 
+    window.goToNextDay = () => {
+      if (currentDay < 7) {
+        switchDay(currentDay + 1);
+      } else {
+        // Day 7 - show goal accomplished
+        createConfetti(200);
+        showGoalAccomplished();
+      }
+    };
+
+    function showGoalAccomplished() {
+      document.getElementById('accomplishedModal').style.display = 'flex';
+    }
+
+    window.goToHome = () => {
+      // Clear all data for fresh start
+      localStorage.removeItem('wdid_goal');
+      localStorage.removeItem('wdid_pathway');
+      localStorage.removeItem('wdid_roadmap');
+      localStorage.removeItem('wdid_completed');
+      for (let i = 1; i <= 7; i++) {
+        localStorage.removeItem(`wdid_celebrated_day_${i}`);
+      }
+      window.location.href = 'index.html';
+    };
+
     // Close modal on outside click
     window.addEventListener('click', (e) => {
-      const modal = document.getElementById('stuckModal');
-      if (e.target === modal) {
-        modal.style.display = 'none';
+      const stuckModal = document.getElementById('stuckModal');
+      const accomplishedModal = document.getElementById('accomplishedModal');
+      if (e.target === stuckModal) {
+        stuckModal.style.display = 'none';
+      }
+      if (e.target === accomplishedModal) {
+        accomplishedModal.style.display = 'none';
       }
     });
 

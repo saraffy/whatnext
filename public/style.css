@@ -232,12 +232,19 @@ button:disabled {
 }
 
 .stuck-button {
-  margin-top: 1.5rem;
   background: #666;
 }
 
 .stuck-button:hover {
   background: #777;
+}
+
+.next-day-button {
+  background: #4f8ef7;
+}
+
+.next-day-button:hover {
+  background: #3d7dd4;
 }
 
 .loading {
