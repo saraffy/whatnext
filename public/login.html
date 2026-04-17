@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - What Do I Do Next?</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-container {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .auth-form {
+      background: #1a1a1a;
+      padding: 2rem;
+      border-radius: 8px;
+      border: 2px solid #333;
+    }
+    .auth-form h2 {
+      margin-bottom: 1.5rem;
+      color: #4f8ef7;
+      text-align: center;
+    }
+    .auth-form input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #e8e8e8;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .auth-form input:focus {
+      outline: none;
+      border-color: #4f8ef7;
+    }
+    .auth-form button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      background: #4f8ef7;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .auth-form button:hover {
+      background: #3d7dd4;
+    }
+    .divider {
+      text-align: center;
+      margin: 1.5rem 0;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .google-btn {
+      background: white;
+      color: #333;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .google-btn:hover {
+      background: #f0f0f0;
+    }
+    .toggle-form {
+      text-align: center;
+      margin-top: 1rem;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+    .toggle-form a {
+      color: #4f8ef7;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .error {
+      background: #3d1f1f;
+      border: 1px solid #8b3333;
+      color: #ff6b6b;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #666;
+      border-top-color: #4f8ef7;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="auth-container">
+      <div class="auth-form">
+        <h2 id="formTitle">Login</h2>
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="loginForm">
+          <input type="email" id="email" placeholder="Email" />
+          <input type="password" id="password" placeholder="Password" />
+          <button id="loginBtn" onclick="handleLogin()">Login</button>
+
+          <div class="divider">or</div>
+
+          <button class="google-btn" id="googleLoginBtn" onclick="handleGoogleLogin()">
+            Sign in with Google
+          </button>
+
+          <div class="toggle-form">
+            Don't have an account? <a onclick="toggleForm()">Sign up</a>
+          </div>
+        </div>
+
+        <div id="signupForm" style="display: none;">
+          <input type="text" id="name" placeholder="Full Name" />
+          <input type="email" id="signupEmail" placeholder="Email" />
+          <input type="password" id="signupPassword" placeholder="Password" />
+          <input type="password" id="signupPassword2" placeholder="Confirm Password" />
+          <button id="signupBtn" onclick="handleSignup()">Create Account</button>
+
+          <div class="divider">or</div>
+
+          <button class="google-btn" id="googleSignupBtn" onclick="handleGoogleLogin()">
+            Sign up with Google
+          </button>
+
+          <div class="toggle-form">
+            Already have an account? <a onclick="toggleForm()">Login</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      auth,
+      googleProvider,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      signInWithPopup,
+      setDoc,
+      doc,
+      db
+    } from './firebase-config.js';
+
+    window.toggleForm = function() {
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const title = document.getElementById('formTitle');
+      const errorDiv = document.getElementById('error');
+
+      if (loginForm.style.display === 'none') {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+        title.textContent = 'Login';
+      } else {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+        title.textContent = 'Sign Up';
+      }
+      errorDiv.style.display = 'none';
+    };
+
+    window.handleLogin = async function() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('error');
+      const loginBtn = document.getElementById('loginBtn');
+
+      if (!email || !password) {
+        showError('Please enter email and password');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span class="spinner"></span>Logging in...';
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = 'index.html';
+      } catch (error) {
+        showError(error.message);
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Login';
+      }
+    };
+
+    window.handleSignup = async function() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const password2 = document.getElementById('signupPassword2').value;
+      const signupBtn = document.getElementById('signupBtn');
+
+      if (!name || !email || !password || !password2) {
+        showError('Please fill in all fields');
+        return;
+      }
+
+      if (password !== password2) {
+        showError('Passwords do not match');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters');
+        return;
+      }
+
+      signupBtn.disabled = true;
+      signupBtn.innerHTML = '<span class="spinner"></span>Creating account...';
+
+      try {
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+
+        // Store user profile in Firestore
+        await setDoc(doc(db, 'users', result.user.uid), {
+          uid: result.user.uid,
+          name: name,
+          email: email,
+          createdAt: new Date()
+        });
+
+        window.location.href = 'index.html';
+      } catch (error) {
+        showError(error.message);
+        signupBtn.disabled = false;
+        signupBtn.innerHTML = 'Create Account';
+      }
+    };
+
+    window.handleGoogleLogin = async function() {
+      const loginBtn = document.getElementById('googleLoginBtn') || document.getElementById('googleSignupBtn');
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span class="spinner"></span>Signing in...';
+
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+
+        // Store user profile in Firestore
+        await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          name: user.displayName || 'User',
+          email: user.email,
+          createdAt: new Date()
+        }, { merge: true });
+
+        window.location.href = 'index.html';
+      } catch (error) {
+        showError(error.message);
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Sign in with Google';
+      }
+    };
+
+    function showError(msg) {
+      const errorDiv = document.getElementById('error');
+      errorDiv.textContent = msg;
+      errorDiv.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

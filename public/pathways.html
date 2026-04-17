@@ -15,8 +15,16 @@
     <div id="error" class="error" style="display: none;"></div>
   </div>
 
-  <script src="app.js"></script>
-  <script>
+  <script src="app.js" type="module"></script>
+  <script type="module">
+    import { auth, onAuthStateChanged } from './firebase-config.js';
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+    });
+
     const pathwaysContainer = document.getElementById('pathwaysContainer');
     const goalDisplay = document.getElementById('goalDisplay');
     const errorDiv = document.getElementById('error');

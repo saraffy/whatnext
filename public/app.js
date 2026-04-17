@@ -92,6 +92,27 @@ const storage = {
   },
 };
 
+// Logout function
+async function logout() {
+  try {
+    const { signOut } = await import('./firebase-config.js');
+    const { auth } = await import('./firebase-config.js');
+    await signOut(auth);
+    // Clear localStorage
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('wdid_')) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    window.location.href = 'login.html';
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+}
+
 // Shared API functions
 const api = {
   analyzeGoal: async (goal) => {
