@@ -118,9 +118,8 @@
       selectedDuration = duration;
       renderPresets();
 
-      // Show loading state
-      presetsDiv.style.opacity = '0.5';
-      presetsDiv.style.pointerEvents = 'none';
+      // Show loading state with spinner
+      presetsDiv.innerHTML = '<div class="loading-container"><div class="spinner"></div> Generating your roadmap...</div>';
       errorDiv.style.display = 'none';
 
       try {
@@ -136,8 +135,7 @@
         errorDiv.style.display = 'block';
         console.error(err);
         // Restore presets on error
-        presetsDiv.style.opacity = '1';
-        presetsDiv.style.pointerEvents = 'auto';
+        renderPresets();
       }
     };
 

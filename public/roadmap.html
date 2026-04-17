@@ -23,7 +23,10 @@
     <div class="calendar-section">
       <div class="calendar-header">
         <span id="calendarLabel">Roadmap Overview</span>
-        <button id="zoomOutBtn" style="display:none; color: #4f8ef7; cursor: pointer; background: none; border: none; font-size: 0.9rem;">← Zoom Out</button>
+        <div class="zoom-controls">
+          <button id="zoomInBtn" class="zoom-btn" style="display:none;">🔍 Zoom In</button>
+          <button id="zoomOutBtn" class="zoom-btn zoom-btn-out" style="display:none;">← Zoom Out</button>
+        </div>
       </div>
       <div class="period-calendar" id="periodCalendar"></div>
     </div>
@@ -32,7 +35,6 @@
       <div class="day-theme" id="periodTheme"></div>
       <div class="task-list" id="taskList"></div>
       <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-        <button class="next-day-button" id="zoomInBtn" style="display:none;">🔍 Zoom In</button>
         <button class="next-day-button" id="nextBtn" onclick="goToNextPeriod()">Next →</button>
         <button class="stuck-button" onclick="showStuckMessage()">I'm Stuck</button>
       </div>
@@ -147,13 +149,19 @@
       roadmap = storage.getRoadmapForDuration(currentDuration);
 
       if (!roadmap) {
-        for (const duration of allDurations) {
-          const candidate = storage.getRoadmapForDuration(duration);
-          if (candidate) {
-            currentDuration = duration;
-            roadmap = candidate;
-            storage.setCurrentDuration(duration);
-            break;
+        // Scan localStorage keys directly for any roadmap matching this goal
+        const prefix = `wdid_${activeId}_roadmap_`;
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith(prefix)) {
+            const foundDuration = key.slice(prefix.length);
+            const candidate = storage.getRoadmapForDuration(foundDuration);
+            if (candidate) {
+              currentDuration = foundDuration;
+              roadmap = candidate;
+              storage.setCurrentDuration(foundDuration);
+              break;
+            }
           }
         }
       }
@@ -222,7 +230,8 @@
       const taskList = document.getElementById('taskList');
       const durationForStorage = drillDownLevel === 'top' ? currentDuration : getDrillDownDuration();
 
-      taskList.innerHTML = periodData.tasks.map((task, i) => `
+      const legendHTML = '<div class="task-help-legend">Tap ? on any task for a step-by-step guide</div>';
+      const tasksHTML = periodData.tasks.map((task, i) => `
         <div class="task-item">
           <input
             type="checkbox"
@@ -237,9 +246,10 @@
               <span class="task-type">${task.type}</span>
             </div>
           </div>
-          <button type="button" class="help-task-btn" onclick="showHelpPanel('${task.task}', '${task.type}', ${period}, ${i})">?</button>
+          <button type="button" class="help-task-btn" title="Get step-by-step help" onclick="showHelpPanel('${task.task}', '${task.type}', ${period}, ${i})">?</button>
         </div>
       `).join('');
+      taskList.innerHTML = legendHTML + tasksHTML;
 
       // Update zoom button visibility
       const zoomBtn = document.getElementById('zoomInBtn');
@@ -314,9 +324,11 @@
 
       if (!drillDuration) return;
 
-      // Show loading
-      const sidebar = document.getElementById('periodSidebar');
-      sidebar.innerHTML = '<div class="loading-container"><div class="spinner"></div> Loading...</div>';
+      // Show loading in calendar area
+      document.getElementById('periodCalendar').innerHTML =
+        '<div class="loading-container" style="grid-column:1/-1"><div class="spinner"></div> Loading detailed plan...</div>';
+      document.getElementById('taskList').innerHTML = '';
+      document.getElementById('periodTheme').textContent = '';
 
       try {
         const roadmap = await api.generateRoadmap(goal, braindump, drillDuration);
@@ -329,7 +341,8 @@
         renderPeriod(currentPeriod);
       } catch (err) {
         console.error('Drill-down error:', err);
-        sidebar.innerHTML = '<div style="color: #ff6b6b; padding: 1rem;">Failed to load details</div>';
+        document.getElementById('periodCalendar').innerHTML =
+          '<div style="color: #ff6b6b; padding: 1rem; grid-column:1/-1;">Failed to load details</div>';
       }
     };
 

@@ -274,6 +274,36 @@ button:disabled {
   font-size: 0.95rem;
 }
 
+.zoom-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.zoom-btn {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.75rem;
+  font-weight: 600;
+  background: #4f8ef7;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.zoom-btn:hover {
+  background: #3d7dd4;
+}
+
+.zoom-btn-out {
+  background: #555;
+}
+
+.zoom-btn-out:hover {
+  background: #666;
+}
+
 .period-calendar {
   display: grid;
   gap: 0.75rem;
@@ -343,6 +373,14 @@ button:disabled {
   gap: 1rem;
 }
 
+.task-help-legend {
+  color: #555;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+  font-style: italic;
+  padding-left: 0.25rem;
+}
+
 .task-item {
   display: flex;
   gap: 1rem;
@@ -355,15 +393,15 @@ button:disabled {
 }
 
 .help-task-btn {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border-radius: 50%;
-  background: #333;
-  color: #aaa;
+  background: #1e3a6e;
+  color: #7fb3f5;
   font-size: 0.9rem;
   font-weight: 600;
-  border: 1px solid #444;
+  border: 1px solid #4f8ef7;
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.2s;
