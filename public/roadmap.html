@@ -21,6 +21,20 @@
     </div>
 
     <div id="error" class="error" style="display: none;"></div>
+    <div id="confetti"></div>
+  </div>
+
+  <!-- Stuck Modal -->
+  <div id="stuckModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeStuckModal()">&times;</button>
+      <h2>You've Got This! 💪</h2>
+      <p>Every expert was once a beginner. Break the task into smaller steps, ask for help, or come back to it later. Progress over perfection.</p>
+      <div style="margin-top: 2rem; text-align: center;">
+        <p style="color: #999; font-size: 0.9rem; margin-bottom: 1rem;">Here's a song to lift your spirits:</p>
+        <iframe width="100%" height="315" src="https://www.youtube.com/embed/xcn_kEJIEkk?controls=1&modestbranding=1" title="The Climb - Miley Cyrus" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 8px;"></iframe>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>
@@ -60,6 +74,12 @@
       renderDay(day);
     };
 
+    function allTasksCompleted(dayNum) {
+      const day = roadmap.find((d) => d.day === dayNum);
+      if (!day) return false;
+      return day.tasks.every((_, i) => storage.isTaskCompleted(dayNum, i));
+    }
+
     function renderDay(dayNum) {
       const day = roadmap.find((d) => d.day === dayNum);
       if (!day) return;
@@ -84,6 +104,55 @@
           </div>
         </div>
       `).join('');
+
+      // Check if all tasks completed
+      if (allTasksCompleted(dayNum)) {
+        triggerCelebration(dayNum);
+      }
+    }
+
+    function triggerCelebration(dayNum) {
+      const confettiKey = `wdid_celebrated_day_${dayNum}`;
+      if (localStorage.getItem(confettiKey)) return; // Only celebrate once per day
+
+      localStorage.setItem(confettiKey, 'true');
+      createConfetti();
+      showCelebrationMessage(dayNum);
+    }
+
+    function createConfetti() {
+      const confettiContainer = document.getElementById('confetti');
+      confettiContainer.innerHTML = '';
+
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti-piece';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.delay = Math.random() * 0.5 + 's';
+        confettiContainer.appendChild(confetti);
+      }
+
+      setTimeout(() => {
+        confettiContainer.innerHTML = '';
+      }, 3000);
+    }
+
+    function showCelebrationMessage(dayNum) {
+      const messages = [
+        '🎉 Day completed! You\'re crushing it!',
+        '⭐ Amazing work! You\'re building momentum!',
+        '🚀 Unstoppable! Keep this energy going!',
+        '💯 Perfect day! You\'re a machine!',
+        '✨ You\'re on fire! Keep going!'
+      ];
+      const msg = messages[Math.floor(Math.random() * messages.length)];
+
+      const celebration = document.createElement('div');
+      celebration.className = 'celebration-message';
+      celebration.textContent = msg;
+      document.querySelector('.container').appendChild(celebration);
+
+      setTimeout(() => celebration.remove(), 3000);
     }
 
     window.toggleTask = (day, index) => {
@@ -92,8 +161,20 @@
     };
 
     window.showStuckMessage = () => {
-      alert('💡 You got this! Break the task into smaller steps, or skip ahead to the next day. Progress is progress.');
+      document.getElementById('stuckModal').style.display = 'flex';
     };
+
+    window.closeStuckModal = () => {
+      document.getElementById('stuckModal').style.display = 'none';
+    };
+
+    // Close modal on outside click
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById('stuckModal');
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
 
     loadRoadmap();
   </script>

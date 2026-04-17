@@ -287,6 +287,142 @@ button:disabled {
   margin: 0 auto 1rem;
 }
 
+/* Confetti */
+#confetti {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #4f8ef7;
+  animation: fall 3s ease-in forwards;
+  border-radius: 50%;
+}
+
+.confetti-piece:nth-child(odd) {
+  background: #ff6b9d;
+}
+
+.confetti-piece:nth-child(3n) {
+  background: #ffd93d;
+}
+
+.confetti-piece:nth-child(4n) {
+  background: #6bcf7f;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotateZ(720deg);
+    opacity: 0;
+  }
+}
+
+/* Celebration message */
+.celebration-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #4f8ef7;
+  color: white;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  z-index: 10000;
+  animation: popUp 0.3s ease-out, fadeOut 0.5s ease-out 2.5s forwards;
+  box-shadow: 0 8px 32px rgba(79, 142, 247, 0.3);
+}
+
+@keyframes popUp {
+  from {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+}
+
+.modal-content {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  border: 2px solid #333;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #333;
+  border: none;
+  color: #e8e8e8;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.modal-close:hover {
+  background: #444;
+}
+
+.modal-content h2 {
+  margin-bottom: 1rem;
+  color: #4f8ef7;
+  font-size: 1.5rem;
+}
+
+.modal-content p {
+  color: #ccc;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .container {
