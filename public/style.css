@@ -296,6 +296,7 @@ button:disabled {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
+  overflow: hidden;
 }
 
 .confetti-piece {
@@ -303,25 +304,38 @@ button:disabled {
   width: 10px;
   height: 10px;
   background: #4f8ef7;
-  animation: fall 3s ease-in forwards;
   border-radius: 50%;
+  top: -10px;
 }
 
 .confetti-piece:nth-child(odd) {
   background: #ff6b9d;
+  animation: fall-left 3s ease-in forwards;
+}
+
+.confetti-piece:nth-child(even) {
+  background: #ffd93d;
+  animation: fall-right 3s ease-in forwards;
 }
 
 .confetti-piece:nth-child(3n) {
-  background: #ffd93d;
-}
-
-.confetti-piece:nth-child(4n) {
   background: #6bcf7f;
 }
 
-@keyframes fall {
+.confetti-piece:nth-child(4n) {
+  background: #ff6b9d;
+}
+
+@keyframes fall-left {
   to {
-    transform: translateY(100vh) rotateZ(720deg);
+    transform: translateY(100vh) translateX(-100px) rotateZ(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fall-right {
+  to {
+    transform: translateY(100vh) translateX(100px) rotateZ(720deg);
     opacity: 0;
   }
 }

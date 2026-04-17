@@ -1,6 +1,14 @@
 // Shared state functions
 const storage = {
-  setGoal: (goal) => localStorage.setItem('wdid_goal', goal),
+  setGoal: (goal) => {
+    localStorage.setItem('wdid_goal', goal);
+    // Clear completed tasks when new goal is set
+    localStorage.removeItem('wdid_completed');
+    // Clear celebrations
+    for (let i = 1; i <= 7; i++) {
+      localStorage.removeItem(`wdid_celebrated_day_${i}`);
+    }
+  },
   getGoal: () => localStorage.getItem('wdid_goal'),
   setPathway: (pathway) => localStorage.setItem('wdid_pathway', JSON.stringify(pathway)),
   getPathway: () => {
