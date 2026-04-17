@@ -255,6 +255,38 @@ button:disabled {
   margin-bottom: 1rem;
 }
 
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #666;
+  border-top-color: #4f8ef7;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-container {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #4f8ef7;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.loading-container .spinner {
+  width: 24px;
+  height: 24px;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .container {

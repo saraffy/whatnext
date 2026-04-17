@@ -39,7 +39,7 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Generating...';
+      submitBtn.innerHTML = '<span class="spinner"></span>Generating pathways...';
       errorDiv.style.display = 'none';
 
       try {
@@ -50,7 +50,7 @@
         showError('Failed to generate pathways. Please try again.');
         console.error(err);
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Generate Pathways';
+        submitBtn.innerHTML = 'Generate Pathways';
       }
     });
 

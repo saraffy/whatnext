@@ -52,6 +52,14 @@
     window.selectPathway = async (index) => {
       const goal = storage.getGoal();
 
+      // Show loading state
+      pathwaysContainer.innerHTML = `
+        <div class="loading-container">
+          <div class="spinner"></div>
+          Creating your 7-day roadmap...
+        </div>
+      `;
+
       try {
         const data = await api.generatePathways(goal);
         const pathway = data.pathways[index];
@@ -65,6 +73,8 @@
       } catch (err) {
         showError('Failed to generate roadmap. Please try again.');
         console.error(err);
+        // Restore pathways on error
+        loadPathways();
       }
     };
 
