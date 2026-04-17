@@ -85,9 +85,11 @@
     let selectedDuration = '1w';
 
     function loadDuration() {
-      const goal = storage.getGoal();
+      const goals = storage.getGoalsList();
+      const activeId = storage.getActiveGoalId();
+      const activeGoal = goals.find(g => g.id === activeId);
 
-      if (!goal) {
+      if (!activeGoal) {
         window.location.href = 'index.html';
         return;
       }
@@ -105,8 +107,10 @@
     }
 
     window.selectDuration = async (duration) => {
-      const goal = storage.getGoal();
-      const braindump = localStorage.getItem('wdid_braindump') || '';
+      const goals = storage.getGoalsList();
+      const activeId = storage.getActiveGoalId();
+      const activeGoal = goals.find(g => g.id === activeId);
+      const braindump = activeId ? (localStorage.getItem(`wdid_${activeId}_braindump`) || '') : '';
       const errorDiv = document.getElementById('error');
       const presetsDiv = document.getElementById('durationPresets');
 
@@ -122,7 +126,7 @@
         storage.setCurrentDuration(duration);
 
         // Generate roadmap for selected duration
-        const roadmap = await api.generateRoadmap(goal, braindump, duration);
+        const roadmap = await api.generateRoadmap(activeGoal.goal, braindump, duration);
         storage.setRoadmapForDuration(duration, roadmap.roadmap);
 
         window.location.href = 'roadmap.html';

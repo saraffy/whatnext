@@ -122,24 +122,31 @@
     const errorDiv = document.getElementById('error');
 
     function loadBraindump() {
-      const goal = storage.getGoal();
-      if (!goal) {
+      const goals = storage.getGoalsList();
+      const activeId = storage.getActiveGoalId();
+      const activeGoal = goals.find(g => g.id === activeId);
+
+      if (!activeGoal) {
         window.location.href = 'index.html';
         return;
       }
-      goalDisplay.textContent = goal;
+      goalDisplay.textContent = activeGoal.goal;
     }
 
     continueBtn.addEventListener('click', () => {
       const braindump = braindumpText.value.trim();
-      if (braindump) {
-        localStorage.setItem('wdid_braindump', braindump);
+      const activeId = storage.getActiveGoalId();
+      if (braindump && activeId) {
+        localStorage.setItem(`wdid_${activeId}_braindump`, braindump);
       }
       window.location.href = 'duration.html';
     });
 
     window.skipBraindump = () => {
-      localStorage.removeItem('wdid_braindump');
+      const activeId = storage.getActiveGoalId();
+      if (activeId) {
+        localStorage.removeItem(`wdid_${activeId}_braindump`);
+      }
       window.location.href = 'duration.html';
     };
 

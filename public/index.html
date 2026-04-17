@@ -78,8 +78,8 @@
       errorDiv.style.display = 'none';
 
       try {
-        storage.setGoal(goal);
         const data = await api.analyzeGoal(goal);
+        storage.createGoal(goal, data.summary);
         storage.setSummaryData(data.summary, data.encouragement, data.pathways);
         window.location.href = 'braindump.html';
       } catch (err) {

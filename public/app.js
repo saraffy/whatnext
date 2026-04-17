@@ -79,6 +79,65 @@ const storage = {
   toggleTask: (day, taskIndex) => storage.toggleTaskForDuration('week', day, taskIndex),
   isTaskCompleted: (day, taskIndex) => storage.isTaskCompletedForDuration('week', day, taskIndex),
 
+  // Multi-goal support
+  getGoalsList: () => {
+    const list = localStorage.getItem('wdid_goals_list');
+    return list ? JSON.parse(list) : [];
+  },
+  getActiveGoalId: () => localStorage.getItem('wdid_active_goal_id'),
+  createGoal: (goal, summary) => {
+    const id = 'goal_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    const list = storage.getGoalsList();
+    list.push({
+      id,
+      goal,
+      summary,
+      createdAt: new Date().toISOString(),
+      lastActive: new Date().toISOString(),
+    });
+    localStorage.setItem('wdid_goals_list', JSON.stringify(list));
+    localStorage.setItem('wdid_active_goal_id', id);
+    return id;
+  },
+  switchGoal: (goalId) => {
+    const list = storage.getGoalsList();
+    const goal = list.find(g => g.id === goalId);
+    if (goal) {
+      goal.lastActive = new Date().toISOString();
+      localStorage.setItem('wdid_goals_list', JSON.stringify(list));
+      localStorage.setItem('wdid_active_goal_id', goalId);
+    }
+  },
+  deleteGoal: (goalId) => {
+    let list = storage.getGoalsList();
+    list = list.filter(g => g.id !== goalId);
+    localStorage.setItem('wdid_goals_list', JSON.stringify(list));
+
+    // Remove all goal-specific keys
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.includes(`_${goalId}_`)) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+
+    // If deleted active goal, switch to first remaining goal
+    const activeId = storage.getActiveGoalId();
+    if (activeId === goalId && list.length > 0) {
+      localStorage.setItem('wdid_active_goal_id', list[0].id);
+    } else if (list.length === 0) {
+      localStorage.removeItem('wdid_active_goal_id');
+    }
+  },
+
+  // Override storage methods to support goal IDs
+  _getGoalIdForStorage: () => {
+    const activeId = storage.getActiveGoalId();
+    return activeId || 'default';
+  },
+
   // Clear all data
   clearAll: () => {
     const keysToRemove = [];

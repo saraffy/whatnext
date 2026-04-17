@@ -118,10 +118,12 @@
     }
 
     function loadRoadmap() {
-      const goal = storage.getGoal();
+      const goals = storage.getGoalsList();
+      const activeId = storage.getActiveGoalId();
+      const activeGoal = goals.find(g => g.id === activeId);
       currentDuration = storage.getCurrentDuration();
 
-      if (!goal) {
+      if (!activeGoal) {
         window.location.href = 'index.html';
         return;
       }
@@ -133,7 +135,7 @@
         return;
       }
 
-      document.getElementById('pathwayDisplay').textContent = `Duration: ${currentDuration}`;
+      document.getElementById('pathwayDisplay').textContent = `${activeGoal.goal} • Duration: ${currentDuration}`;
       renderPeriodButtons();
       renderPeriod(currentPeriod);
     }
@@ -287,8 +289,10 @@
       helpPanel.classList.add('open');
 
       try {
-        const goal = storage.getGoal();
-        const help = await api.getTaskHelp(goal, task, taskType);
+        const goals = storage.getGoalsList();
+        const activeId = storage.getActiveGoalId();
+        const activeGoal = goals.find(g => g.id === activeId);
+        const help = await api.getTaskHelp(activeGoal.goal, task, taskType);
 
         let html = '<div class="help-steps"><strong>Steps:</strong><ol>';
         help.steps.forEach(step => {

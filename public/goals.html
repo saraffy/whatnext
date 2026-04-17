@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Goals - What Do I Do Next?</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .goals-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .goal-card {
+      background: #1a1a1a;
+      border: 2px solid #333;
+      border-radius: 8px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .goal-card:hover {
+      border-color: #4f8ef7;
+      background: #222;
+    }
+
+    .goal-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .goal-card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #e8e8e8;
+      flex: 1;
+    }
+
+    .goal-badge {
+      background: #4f8ef7;
+      color: #fff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .goal-summary {
+      color: #999;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .goal-progress {
+      margin-bottom: 0.75rem;
+    }
+
+    .goal-progress-label {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 0.25rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #4f8ef7;
+      transition: width 0.2s;
+    }
+
+    .goal-card-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      justify-content: flex-end;
+    }
+
+    .delete-btn {
+      padding: 0.5rem 1rem;
+      background: #3d1f1f;
+      border: 1px solid #8b3333;
+      color: #ff6b6b;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: #4d2f2f;
+    }
+
+    .new-goal-btn {
+      background: #4f8ef7;
+      padding: 1rem 2rem;
+      margin-bottom: 2rem;
+      width: 100%;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .new-goal-btn:hover {
+      background: #3d7dd4;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #666;
+      padding: 3rem 1rem;
+    }
+
+    .empty-state p {
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>My Goals</h1>
+    <p class="subtitle">Track all your goals and switch between them</p>
+
+    <button class="new-goal-btn" onclick="createNewGoal()">+ Create New Goal</button>
+
+    <div class="goals-grid" id="goalsGrid">
+      <div class="empty-state">
+        <p>No goals yet. Create your first one!</p>
+      </div>
+    </div>
+
+    <div id="error" class="error" style="display: none;"></div>
+  </div>
+
+  <script src="app.js"></script>
+  <script type="module">
+    import { auth, onAuthStateChanged } from './firebase-config.js';
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+    });
+
+    function loadGoals() {
+      const goals = storage.getGoalsList();
+      const activeGoalId = storage.getActiveGoalId();
+      const goalsGrid = document.getElementById('goalsGrid');
+
+      if (!goals || goals.length === 0) {
+        goalsGrid.innerHTML = `
+          <div class="empty-state">
+            <p>No goals yet. Create your first one!</p>
+          </div>
+        `;
+        return;
+      }
+
+      goalsGrid.innerHTML = goals.map((g) => {
+        const progress = calculateProgress(g.id);
+        return `
+          <div class="goal-card" onclick="switchAndLoad('${g.id}')">
+            <div class="goal-card-header">
+              <div class="goal-card-title">${g.goal}</div>
+              ${g.id === activeGoalId ? '<div class="goal-badge">Active</div>' : ''}
+            </div>
+            <div class="goal-summary">${g.summary || ''}</div>
+            <div class="goal-progress">
+              <div class="goal-progress-label">Progress: ${progress}%</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${progress}%"></div>
+              </div>
+            </div>
+            <div class="goal-card-actions">
+              <button type="button" class="delete-btn" onclick="deleteGoal('${g.id}', event)">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function calculateProgress(goalId) {
+      const durations = ['1d', '3d', '1w', '2w', '1m', '3m', '6m', '1y', '2y', '5y'];
+      let totalTasks = 0;
+      let completedTasks = 0;
+
+      durations.forEach(d => {
+        const roadmap = storage.getRoadmapForDuration(d, goalId);
+        if (roadmap) {
+          roadmap.forEach((period, i) => {
+            period.tasks.forEach((_, taskIndex) => {
+              totalTasks++;
+              if (storage.isTaskCompletedForDuration(d, period.period, taskIndex, goalId)) {
+                completedTasks++;
+              }
+            });
+          });
+        }
+      });
+
+      if (totalTasks === 0) return 0;
+      return Math.round((completedTasks / totalTasks) * 100);
+    }
+
+    window.createNewGoal = () => {
+      window.location.href = 'index.html';
+    };
+
+    window.switchAndLoad = (goalId) => {
+      storage.switchGoal(goalId);
+      window.location.href = 'roadmap.html';
+    };
+
+    window.deleteGoal = (goalId, event) => {
+      event.stopPropagation();
+      if (!confirm('Delete this goal and all its data?')) return;
+
+      storage.deleteGoal(goalId);
+      loadGoals();
+    };
+
+    loadGoals();
+  </script>
+</body>
+</html>
