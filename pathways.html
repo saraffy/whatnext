@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Your Pathway</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Choose Your Pathway</h1>
+    <p class="subtitle" id="goalDisplay"></p>
+
+    <div id="pathwaysContainer" class="pathways-grid"></div>
+    <div id="error" class="error" style="display: none;"></div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const pathwaysContainer = document.getElementById('pathwaysContainer');
+    const goalDisplay = document.getElementById('goalDisplay');
+    const errorDiv = document.getElementById('error');
+
+    async function loadPathways() {
+      const goal = storage.getGoal();
+      if (!goal) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      goalDisplay.textContent = `Goal: ${goal}`;
+
+      try {
+        const data = await api.generatePathways(goal);
+        renderPathways(data.pathways);
+      } catch (err) {
+        showError('Failed to load pathways. Please try again.');
+        console.error(err);
+      }
+    }
+
+    function renderPathways(pathways) {
+      pathwaysContainer.innerHTML = pathways.map((p, i) => `
+        <div class="pathway-card" onclick="selectPathway(${i})">
+          <span class="pathway-emoji">${p.emoji}</span>
+          <div class="pathway-title">${p.title}</div>
+          <div class="pathway-description">${p.description}</div>
+        </div>
+      `).join('');
+    }
+
+    window.selectPathway = async (index) => {
+      const goal = storage.getGoal();
+
+      try {
+        const data = await api.generatePathways(goal);
+        const pathway = data.pathways[index];
+        storage.setPathway(pathway.title);
+
+        // Generate roadmap
+        const roadmapData = await api.generateRoadmap(goal, pathway.title);
+        storage.setRoadmap(roadmapData.roadmap);
+
+        window.location.href = 'roadmap.html';
+      } catch (err) {
+        showError('Failed to generate roadmap. Please try again.');
+        console.error(err);
+      }
+    };
+
+    function showError(msg) {
+      errorDiv.textContent = msg;
+      errorDiv.style.display = 'block';
+    }
+
+    loadPathways();
+  </script>
+</body>
+</html>

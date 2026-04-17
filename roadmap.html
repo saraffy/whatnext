@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your 7-Day Roadmap</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Your 7-Day Roadmap</h1>
+    <p class="subtitle" id="pathwayDisplay"></p>
+
+    <div class="roadmap-container">
+      <div class="days-sidebar" id="daysBtns"></div>
+      <div class="roadmap-content">
+        <div class="day-theme" id="dayTheme"></div>
+        <div class="task-list" id="taskList"></div>
+        <button class="stuck-button" onclick="showStuckMessage()">I'm Stuck</button>
+      </div>
+    </div>
+
+    <div id="error" class="error" style="display: none;"></div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let currentDay = 1;
+    let roadmap = [];
+
+    function loadRoadmap() {
+      const goal = storage.getGoal();
+      const pathway = storage.getPathway();
+      const savedRoadmap = storage.getRoadmap();
+
+      if (!goal || !pathway || !savedRoadmap) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      roadmap = savedRoadmap;
+      document.getElementById('pathwayDisplay').textContent = `Pathway: ${pathway}`;
+
+      renderDayButtons();
+      renderDay(currentDay);
+    }
+
+    function renderDayButtons() {
+      const daysBtns = document.getElementById('daysBtns');
+      daysBtns.innerHTML = roadmap.map((day) => `
+        <button class="day-btn ${day.day === currentDay ? 'active' : ''}" onclick="switchDay(${day.day})">
+          Day ${day.day}
+        </button>
+      `).join('');
+    }
+
+    window.switchDay = (day) => {
+      currentDay = day;
+      renderDayButtons();
+      renderDay(day);
+    };
+
+    function renderDay(dayNum) {
+      const day = roadmap.find((d) => d.day === dayNum);
+      if (!day) return;
+
+      document.getElementById('dayTheme').textContent = day.theme;
+
+      const taskList = document.getElementById('taskList');
+      taskList.innerHTML = day.tasks.map((task, i) => `
+        <div class="task-item">
+          <input
+            type="checkbox"
+            id="task-${dayNum}-${i}"
+            ${storage.isTaskCompleted(dayNum, i) ? 'checked' : ''}
+            onchange="toggleTask(${dayNum}, ${i})"
+          >
+          <div class="task-text">
+            ${task.task}
+            <div class="task-meta">
+              <span class="task-duration">${task.duration}</span>
+              <span class="task-type">${task.type}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.toggleTask = (day, index) => {
+      storage.toggleTask(day, index);
+      renderDay(currentDay);
+    };
+
+    window.showStuckMessage = () => {
+      alert('💡 You got this! Break the task into smaller steps, or skip ahead to the next day. Progress is progress.');
+    };
+
+    loadRoadmap();
+  </script>
+</body>
+</html>

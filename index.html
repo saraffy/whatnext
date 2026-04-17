@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Do I Do Next?</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>What do you want to do or become?</h1>
+    <p class="subtitle">Turn your ambition into a structured 7-day action plan.</p>
+
+    <div class="examples">
+      <span>Examples:</span>
+      <span style="color: #4f8ef7;">Start a music career</span> •
+      <span style="color: #4f8ef7;">Get into AI</span> •
+      <span style="color: #4f8ef7;">Build a startup</span>
+    </div>
+
+    <input type="text" id="goalInput" placeholder="Your goal or ambition...">
+
+    <button id="submitBtn">Generate Pathways</button>
+
+    <div id="error" class="error" style="display: none;"></div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const goalInput = document.getElementById('goalInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorDiv = document.getElementById('error');
+
+    submitBtn.addEventListener('click', async () => {
+      const goal = goalInput.value.trim();
+      if (!goal) {
+        showError('Please enter a goal or ambition.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Generating...';
+      errorDiv.style.display = 'none';
+
+      try {
+        storage.setGoal(goal);
+        await api.generatePathways(goal);
+        window.location.href = 'pathways.html';
+      } catch (err) {
+        showError('Failed to generate pathways. Please try again.');
+        console.error(err);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Generate Pathways';
+      }
+    });
+
+    goalInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        submitBtn.click();
+      }
+    });
+
+    function showError(msg) {
+      errorDiv.textContent = msg;
+      errorDiv.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
