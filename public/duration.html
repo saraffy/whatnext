@@ -70,7 +70,7 @@
 
     window.selectDuration = async (duration) => {
       const goal = storage.getGoal();
-      const pathway = storage.getPathway().title;
+      const pathway = storage.getPathway();
       const errorDiv = document.getElementById('error');
       const durationGrid = document.getElementById('durationGrid');
 
