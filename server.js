@@ -9,7 +9,7 @@ const client = new Anthropic({
 });
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const PATHWAY_PROMPT = `You are a pathway generation engine. Given a user's goal, generate exactly 3 realistic pathways to achieve it.
 
