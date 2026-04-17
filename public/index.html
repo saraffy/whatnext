@@ -23,6 +23,14 @@
 
     <input type="text" id="goalInput" placeholder="Your goal or ambition...">
 
+    <div class="quick-goals">
+      <span>Quick start:</span>
+      <button type="button" class="quick-goal-chip" onclick="quickStart('Reduce my screentime')">📵 Reduce screentime</button>
+      <button type="button" class="quick-goal-chip" onclick="quickStart('Learn how to use AI')">🤖 Learn AI</button>
+      <button type="button" class="quick-goal-chip" onclick="quickStart('Start running regularly')">🏃 Start running</button>
+      <button type="button" class="quick-goal-chip" onclick="quickStart('Build a startup')">🚀 Build a startup</button>
+    </div>
+
     <button id="submitBtn">Generate Pathways</button>
 
     <div id="error" class="error" style="display: none;"></div>
@@ -73,7 +81,7 @@
         storage.setGoal(goal);
         const data = await api.analyzeGoal(goal);
         storage.setSummaryData(data.summary, data.encouragement, data.pathways);
-        window.location.href = 'goal-summary.html';
+        window.location.href = 'braindump.html';
       } catch (err) {
         showError('Failed to analyze goal. Please try again.');
         console.error(err);
@@ -92,6 +100,11 @@
       errorDiv.textContent = msg;
       errorDiv.style.display = 'block';
     }
+
+    window.quickStart = (text) => {
+      goalInput.value = text;
+      submitBtn.click();
+    };
   </script>
 </body>
 </html>

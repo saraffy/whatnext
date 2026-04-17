@@ -50,7 +50,7 @@ Schema:
 
 Goal: {goal}`;
 
-const ROADMAP_DAY_PROMPT = `You are a roadmap generator. Given a user's goal and their chosen pathway, generate a detailed 1-day roadmap split into 3 periods.
+const ROADMAP_DAY_PROMPT = `You are a roadmap generator. Given a user's goal and context, generate a detailed 1-day roadmap split into 3 periods.
 
 Each period (Morning, Afternoon, Evening) should have:
 - A clear theme
@@ -81,9 +81,9 @@ Schema:
 }
 
 Goal: {goal}
-Pathway: {pathway}`;
+{braindumpSection}`;
 
-const ROADMAP_WEEK_PROMPT = `You are a roadmap generator. Given a user's goal and their chosen pathway, generate a detailed 7-day roadmap.
+const ROADMAP_WEEK_PROMPT = `You are a roadmap generator. Given a user's goal and context, generate a detailed 7-day roadmap.
 
 Each day should have:
 - A clear theme
@@ -114,9 +114,9 @@ Schema:
 }
 
 Goal: {goal}
-Pathway: {pathway}`;
+{braindumpSection}`;
 
-const ROADMAP_MONTH_PROMPT = `You are a roadmap generator. Given a user's goal and their chosen pathway, generate a detailed 4-week roadmap.
+const ROADMAP_MONTH_PROMPT = `You are a roadmap generator. Given a user's goal and context, generate a detailed 4-week roadmap.
 
 Each week should have:
 - A clear theme
@@ -147,9 +147,9 @@ Schema:
 }
 
 Goal: {goal}
-Pathway: {pathway}`;
+{braindumpSection}`;
 
-const ROADMAP_YEAR_PROMPT = `You are a roadmap generator. Given a user's goal and their chosen pathway, generate a detailed 12-month roadmap.
+const ROADMAP_YEAR_PROMPT = `You are a roadmap generator. Given a user's goal and context, generate a detailed 12-month roadmap.
 
 Each month should have:
 - A clear theme
@@ -180,7 +180,7 @@ Schema:
 }
 
 Goal: {goal}
-Pathway: {pathway}`;
+{braindumpSection}`;
 
 app.post('/api/analyze-goal', async (req, res) => {
   try {
@@ -254,10 +254,12 @@ app.post('/api/pathways', async (req, res) => {
 
 app.post('/api/roadmap', async (req, res) => {
   try {
-    const { goal, pathway, duration = 'week' } = req.body;
-    if (!goal || !pathway) {
-      return res.status(400).json({ error: 'Goal and pathway are required' });
+    const { goal, braindump = '', duration = 'week' } = req.body;
+    if (!goal) {
+      return res.status(400).json({ error: 'Goal is required' });
     }
+
+    const braindumpSection = braindump ? `Context:\n${braindump}` : '';
 
     const promptMap = {
       day: ROADMAP_DAY_PROMPT,
@@ -278,7 +280,7 @@ app.post('/api/roadmap', async (req, res) => {
 
     const prompt = promptTemplate
       .replace('{goal}', goal)
-      .replace('{pathway}', pathway);
+      .replace('{braindumpSection}', braindumpSection);
 
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',

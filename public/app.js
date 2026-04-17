@@ -133,11 +133,11 @@ const api = {
     if (!res.ok) throw new Error('Failed to generate pathways');
     return res.json();
   },
-  generateRoadmap: async (goal, pathway, duration = 'week') => {
+  generateRoadmap: async (goal, braindumpOrPathway, duration = 'week') => {
     const res = await fetch('/api/roadmap', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goal, pathway, duration }),
+      body: JSON.stringify({ goal, braindump: braindumpOrPathway, duration }),
     });
     if (!res.ok) throw new Error('Failed to generate roadmap');
     return res.json();

@@ -78,7 +78,7 @@
 
     window.selectDuration = async (duration) => {
       const goal = storage.getGoal();
-      const pathway = storage.getPathway();
+      const braindump = localStorage.getItem('wdid_braindump') || '';
       const errorDiv = document.getElementById('error');
       const durationGrid = document.getElementById('durationGrid');
 
@@ -86,7 +86,7 @@
       durationGrid.innerHTML = `
         <div class="loading-container">
           <div class="spinner"></div>
-          Generating all roadmaps...
+          Generating your roadmap...
         </div>
       `;
       errorDiv.style.display = 'none';
@@ -94,23 +94,13 @@
       try {
         storage.setCurrentDuration(duration);
 
-        // Generate all 4 roadmaps in parallel
-        const roadmaps = await Promise.all([
-          api.generateRoadmap(goal, pathway, 'day'),
-          api.generateRoadmap(goal, pathway, 'week'),
-          api.generateRoadmap(goal, pathway, 'month'),
-          api.generateRoadmap(goal, pathway, 'year'),
-        ]);
-
-        // Store all roadmaps
-        storage.setRoadmapForDuration('day', roadmaps[0].roadmap);
-        storage.setRoadmapForDuration('week', roadmaps[1].roadmap);
-        storage.setRoadmapForDuration('month', roadmaps[2].roadmap);
-        storage.setRoadmapForDuration('year', roadmaps[3].roadmap);
+        // Generate roadmap for selected duration only
+        const roadmap = await api.generateRoadmap(goal, braindump, duration);
+        storage.setRoadmapForDuration(duration, roadmap.roadmap);
 
         window.location.href = 'roadmap.html';
       } catch (err) {
-        errorDiv.textContent = 'Failed to generate roadmaps. Please try again.';
+        errorDiv.textContent = 'Failed to generate roadmap. Please try again.';
         errorDiv.style.display = 'block';
         console.error(err);
         // Restore durations on error

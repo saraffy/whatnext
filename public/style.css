@@ -84,6 +84,40 @@ button:disabled {
   margin-right: 0.5rem;
 }
 
+/* Quick-start chips */
+.quick-goals {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.quick-goals span {
+  color: #999;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.quick-goal-chip {
+  padding: 0.5rem 1.25rem;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  color: #e8e8e8;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.quick-goal-chip:hover {
+  border-color: #4f8ef7;
+  color: #4f8ef7;
+  transform: translateY(-1px);
+}
+
 /* Goal summary box */
 .goal-summary-box {
   background: #1a1a1a;
