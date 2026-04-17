@@ -67,13 +67,25 @@
 
   <script src="app.js" type="module"></script>
   <script type="module">
-    import { auth, onAuthStateChanged } from './firebase-config.js';
+    import { auth, onAuthStateChanged, signOut } from './firebase-config.js';
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = 'login.html';
       }
     });
+
+    // Logout function
+    window.logout = async function() {
+      try {
+        await signOut(auth);
+        localStorage.clear();
+        window.location.href = 'login.html';
+      } catch (error) {
+        console.error('Logout error:', error);
+        alert('Error logging out: ' + error.message);
+      }
+    };
 
     let currentDuration = 'week';
     let currentPeriod = 1;
