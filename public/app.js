@@ -38,46 +38,50 @@ const storage = {
     return p ? JSON.parse(p) : null;
   },
 
-  // Multi-duration roadmap storage
-  setRoadmapForDuration: (duration, roadmap) => {
-    localStorage.setItem(`wdid_roadmap_${duration}`, JSON.stringify(roadmap));
+  // Multi-duration roadmap storage (with goal ID support)
+  setRoadmapForDuration: (duration, roadmap, goalId = null) => {
+    const id = goalId || storage.getActiveGoalId() || 'default';
+    localStorage.setItem(`wdid_${id}_roadmap_${duration}`, JSON.stringify(roadmap));
   },
-  getRoadmapForDuration: (duration) => {
-    const r = localStorage.getItem(`wdid_roadmap_${duration}`);
+  getRoadmapForDuration: (duration, goalId = null) => {
+    const id = goalId || storage.getActiveGoalId() || 'default';
+    const r = localStorage.getItem(`wdid_${id}_roadmap_${duration}`);
     return r ? JSON.parse(r) : null;
   },
 
   // Current duration tracking
   setCurrentDuration: (duration) => localStorage.setItem('wdid_current_duration', duration),
-  getCurrentDuration: () => localStorage.getItem('wdid_current_duration') || 'week',
+  getCurrentDuration: () => localStorage.getItem('wdid_current_duration') || '1w',
 
-  // Per-duration completion tracking
-  getCompletedForDuration: (duration) => {
-    const c = localStorage.getItem(`wdid_completed_${duration}`);
+  // Per-duration completion tracking (with goal ID support)
+  getCompletedForDuration: (duration, goalId = null) => {
+    const id = goalId || storage.getActiveGoalId() || 'default';
+    const c = localStorage.getItem(`wdid_${id}_completed_${duration}`);
     return c ? JSON.parse(c) : {};
   },
-  setCompletedForDuration: (duration, completed) => {
-    localStorage.setItem(`wdid_completed_${duration}`, JSON.stringify(completed));
+  setCompletedForDuration: (duration, completed, goalId = null) => {
+    const id = goalId || storage.getActiveGoalId() || 'default';
+    localStorage.setItem(`wdid_${id}_completed_${duration}`, JSON.stringify(completed));
   },
-  toggleTaskForDuration: (duration, period, taskIndex) => {
-    const completed = storage.getCompletedForDuration(duration);
+  toggleTaskForDuration: (duration, period, taskIndex, goalId = null) => {
+    const completed = storage.getCompletedForDuration(duration, goalId);
     const key = `${period}-${taskIndex}`;
     completed[key] = !completed[key];
-    storage.setCompletedForDuration(duration, completed);
+    storage.setCompletedForDuration(duration, completed, goalId);
     return completed[key];
   },
-  isTaskCompletedForDuration: (duration, period, taskIndex) => {
-    const completed = storage.getCompletedForDuration(duration);
+  isTaskCompletedForDuration: (duration, period, taskIndex, goalId = null) => {
+    const completed = storage.getCompletedForDuration(duration, goalId);
     return completed[`${period}-${taskIndex}`] || false;
   },
 
   // Legacy methods (for backward compatibility)
-  setRoadmap: (roadmap) => storage.setRoadmapForDuration('week', roadmap),
-  getRoadmap: () => storage.getRoadmapForDuration('week'),
-  getCompleted: () => storage.getCompletedForDuration('week'),
-  setCompleted: (completed) => storage.setCompletedForDuration('week', completed),
-  toggleTask: (day, taskIndex) => storage.toggleTaskForDuration('week', day, taskIndex),
-  isTaskCompleted: (day, taskIndex) => storage.isTaskCompletedForDuration('week', day, taskIndex),
+  setRoadmap: (roadmap, goalId = null) => storage.setRoadmapForDuration('1w', roadmap, goalId),
+  getRoadmap: (goalId = null) => storage.getRoadmapForDuration('1w', goalId),
+  getCompleted: (goalId = null) => storage.getCompletedForDuration('1w', goalId),
+  setCompleted: (completed, goalId = null) => storage.setCompletedForDuration('1w', completed, goalId),
+  toggleTask: (day, taskIndex, goalId = null) => storage.toggleTaskForDuration('1w', day, taskIndex, goalId),
+  isTaskCompleted: (day, taskIndex, goalId = null) => storage.isTaskCompletedForDuration('1w', day, taskIndex, goalId),
 
   // Multi-goal support
   getGoalsList: () => {

@@ -14,6 +14,12 @@
     <h1>Your Roadmap</h1>
     <p class="subtitle" id="pathwayDisplay"></p>
 
+    <!-- Breadcrumb -->
+    <div id="breadcrumb" style="display: none; margin-bottom: 1rem; color: #999; font-size: 0.9rem;">
+      <a href="javascript:zoomOut()" style="color: #4f8ef7; cursor: pointer;">← Back</a>
+      <span id="breadcrumbText"></span>
+    </div>
+
     <div class="roadmap-container">
       <div class="days-sidebar" id="periodSidebar"></div>
       <div class="roadmap-content">
@@ -74,6 +80,7 @@
   </div>
 
   <script src="app.js"></script>
+  <script src="nav.js"></script>
   <script type="module">
     import { auth, onAuthStateChanged, signOut } from './firebase-config.js';
 
@@ -98,6 +105,8 @@
     let currentDuration = '1w';
     let currentPeriod = 1;
     let roadmap = null;
+    let drillDownLevel = 'top'; // 'top' or 'drilled_{parentPeriod}'
+    let drillDownRoadmap = null;
 
     function getPeriodLabels(duration) {
       // Map custom durations to label arrays
@@ -142,9 +151,10 @@
 
     function renderPeriodButtons() {
       const sidebar = document.getElementById('periodSidebar');
-      const labels = getPeriodLabels(currentDuration);
+      const currentRoadmap = drillDownLevel === 'top' ? roadmap : drillDownRoadmap;
+      const labels = getPeriodLabels(drillDownLevel === 'top' ? currentDuration : getDrillDownDuration());
 
-      sidebar.innerHTML = roadmap.map((period, i) => `
+      sidebar.innerHTML = currentRoadmap.map((period, i) => `
         <button class="day-btn ${period.period === currentPeriod ? 'active' : ''}" onclick="switchPeriod(${period.period})">
           ${labels[i] || `Period ${i + 1}`}
         </button>
@@ -158,24 +168,29 @@
     };
 
     function allTasksCompleted(period) {
-      const periodData = roadmap.find((p) => p.period === period);
+      const currentRoadmap = drillDownLevel === 'top' ? roadmap : drillDownRoadmap;
+      const durationForStorage = drillDownLevel === 'top' ? currentDuration : getDrillDownDuration();
+      const periodData = currentRoadmap.find((p) => p.period === period);
       if (!periodData) return false;
-      return periodData.tasks.every((_, i) => storage.isTaskCompletedForDuration(currentDuration, period, i));
+      return periodData.tasks.every((_, i) => storage.isTaskCompletedForDuration(durationForStorage, period, i));
     }
 
     function renderPeriod(period) {
-      const periodData = roadmap.find((p) => p.period === period);
+      const currentRoadmap = drillDownLevel === 'top' ? roadmap : drillDownRoadmap;
+      const periodData = currentRoadmap.find((p) => p.period === period);
       if (!periodData) return;
 
       document.getElementById('periodTheme').textContent = periodData.theme;
 
       const taskList = document.getElementById('taskList');
+      const durationForStorage = drillDownLevel === 'top' ? currentDuration : getDrillDownDuration();
+
       taskList.innerHTML = periodData.tasks.map((task, i) => `
         <div class="task-item">
           <input
             type="checkbox"
             id="task-${period}-${i}"
-            ${storage.isTaskCompletedForDuration(currentDuration, period, i) ? 'checked' : ''}
+            ${storage.isTaskCompletedForDuration(durationForStorage, period, i) ? 'checked' : ''}
             onchange="toggleTask(${period}, ${i})"
           >
           <div class="task-text">
@@ -188,6 +203,19 @@
           <button type="button" class="help-task-btn" onclick="showHelpPanel('${task.task}', '${task.type}', ${period}, ${i})">?</button>
         </div>
       `).join('');
+
+      // Show drill-down button if applicable
+      if (canDrillDown() && currentRoadmap.length > 0) {
+        const drillBtn = document.createElement('button');
+        drillBtn.type = 'button';
+        drillBtn.className = 'next-day-button';
+        drillBtn.textContent = 'Zoom In →';
+        drillBtn.onclick = () => drillDown(period, periodData.label);
+        const lastTask = taskList.parentElement.querySelector('button.next-day-button');
+        if (lastTask) {
+          lastTask.parentElement.insertBefore(drillBtn, lastTask);
+        }
+      }
 
       // Check if all tasks completed
       if (allTasksCompleted(period)) {
@@ -240,9 +268,67 @@
     }
 
     window.toggleTask = (period, index) => {
-      storage.toggleTaskForDuration(currentDuration, period, index);
+      const durationForStorage = drillDownLevel === 'top' ? currentDuration : getDrillDownDuration();
+      storage.toggleTaskForDuration(durationForStorage, period, index);
       renderPeriod(currentPeriod);
     };
+
+    window.drillDown = async (parentPeriod, parentLabel) => {
+      const goal = storage.getGoal();
+      const braindump = localStorage.getItem('wdid_braindump') || '';
+      const drillDuration = getDrillDownDuration();
+
+      if (!drillDuration) return;
+
+      // Show loading
+      const sidebar = document.getElementById('periodSidebar');
+      sidebar.innerHTML = '<div class="loading-container"><div class="spinner"></div> Loading...</div>';
+
+      try {
+        const roadmap = await api.generateRoadmap(goal, braindump, drillDuration);
+        drillDownRoadmap = roadmap.roadmap;
+        drillDownLevel = `drilled_${parentPeriod}`;
+        currentPeriod = 1;
+
+        renderBreadcrumb(parentLabel);
+        renderPeriodButtons();
+        renderPeriod(currentPeriod);
+      } catch (err) {
+        console.error('Drill-down error:', err);
+        sidebar.innerHTML = '<div style="color: #ff6b6b; padding: 1rem;">Failed to load details</div>';
+      }
+    };
+
+    window.zoomOut = () => {
+      drillDownLevel = 'top';
+      drillDownRoadmap = null;
+      currentPeriod = 1;
+
+      const breadcrumb = document.getElementById('breadcrumb');
+      breadcrumb.style.display = 'none';
+
+      renderPeriodButtons();
+      renderPeriod(currentPeriod);
+    };
+
+    function getDrillDownDuration() {
+      const drillMap = {
+        '3m': '1w', '6m': '1w',
+        '1y': '1m', '2y': '1m', '5y': '1m',
+      };
+      return drillMap[currentDuration] || null;
+    }
+
+    function renderBreadcrumb(parentLabel) {
+      const breadcrumb = document.getElementById('breadcrumb');
+      const text = document.getElementById('breadcrumbText');
+      text.textContent = ` > ${parentLabel}`;
+      breadcrumb.style.display = 'block';
+    }
+
+    function canDrillDown() {
+      return ['3m', '6m', '1y', '2y', '5y'].includes(currentDuration) && drillDownLevel === 'top';
+    }
 
     window.showStuckMessage = () => {
       document.getElementById('stuckModal').style.display = 'flex';
@@ -253,13 +339,16 @@
     };
 
     window.goToNextPeriod = () => {
-      const maxPeriod = roadmap.length;
+      const currentRoadmap = drillDownLevel === 'top' ? roadmap : drillDownRoadmap;
+      const maxPeriod = currentRoadmap.length;
 
       if (currentPeriod < maxPeriod) {
         switchPeriod(currentPeriod + 1);
-      } else {
+      } else if (drillDownLevel === 'top') {
         createConfetti(200);
         showGoalAccomplished();
+      } else {
+        zoomOut();
       }
     };
 
