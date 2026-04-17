@@ -233,15 +233,16 @@
       try {
         const result = await createUserWithEmailAndPassword(auth, email, password);
 
-        // Store user profile in Firestore
-        await setDoc(doc(db, 'users', result.user.uid), {
+        // Redirect immediately, save profile in background
+        window.location.href = 'index.html';
+
+        // Store user profile in Firestore (non-blocking)
+        setDoc(doc(db, 'users', result.user.uid), {
           uid: result.user.uid,
           name: name,
           email: email,
           createdAt: new Date()
-        });
-
-        window.location.href = 'index.html';
+        }).catch(err => console.log('Profile save error:', err));
       } catch (error) {
         showError(error.message);
         signupBtn.disabled = false;
@@ -258,15 +259,16 @@
         const result = await signInWithPopup(auth, googleProvider);
         const user = result.user;
 
-        // Store user profile in Firestore
-        await setDoc(doc(db, 'users', user.uid), {
+        // Redirect immediately, save profile in background
+        window.location.href = 'index.html';
+
+        // Store user profile in Firestore (non-blocking)
+        setDoc(doc(db, 'users', user.uid), {
           uid: user.uid,
           name: user.displayName || 'User',
           email: user.email,
           createdAt: new Date()
-        }, { merge: true });
-
-        window.location.href = 'index.html';
+        }, { merge: true }).catch(err => console.log('Profile save error:', err));
       } catch (error) {
         showError(error.message);
         loginBtn.disabled = false;
