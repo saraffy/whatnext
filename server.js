@@ -261,6 +261,15 @@ app.post('/api/roadmap', async (req, res) => {
 
     const braindumpSection = braindump ? `Context:\n${braindump}` : '';
 
+    // Map custom durations to prompt templates
+    const durationMap = {
+      '1d': 'day', '3d': 'day',
+      '1w': 'week', '2w': 'week',
+      '1m': 'month', '2m': 'month', '3m': 'month',
+      '6m': 'month',
+      '1y': 'year', '2y': 'year', '5y': 'year',
+    };
+
     const promptMap = {
       day: ROADMAP_DAY_PROMPT,
       week: ROADMAP_WEEK_PROMPT,
@@ -275,8 +284,9 @@ app.post('/api/roadmap', async (req, res) => {
       year: 3000,
     };
 
-    const promptTemplate = promptMap[duration] || ROADMAP_WEEK_PROMPT;
-    const maxTokens = maxTokensMap[duration] || 2048;
+    const mappedDuration = durationMap[duration] || 'week';
+    const promptTemplate = promptMap[mappedDuration] || ROADMAP_WEEK_PROMPT;
+    const maxTokens = maxTokensMap[mappedDuration] || 2048;
 
     const prompt = promptTemplate
       .replace('{goal}', goal)

@@ -14,9 +14,6 @@
     <h1>Your Roadmap</h1>
     <p class="subtitle" id="pathwayDisplay"></p>
 
-    <!-- Duration tabs -->
-    <div class="duration-tabs" id="durationTabs"></div>
-
     <div class="roadmap-container">
       <div class="days-sidebar" id="periodSidebar"></div>
       <div class="roadmap-content">
@@ -87,73 +84,56 @@
       }
     };
 
-    let currentDuration = 'week';
+    let currentDuration = '1w';
     let currentPeriod = 1;
-    let roadmaps = {}; // { day: [...], week: [...], month: [...], year: [...] }
+    let roadmap = null;
 
-    const durationLabels = {
-      day: ['Morning', 'Afternoon', 'Evening'],
-      week: Array.from({ length: 7 }, (_, i) => `Day ${i + 1}`),
-      month: Array.from({ length: 4 }, (_, i) => `Week ${i + 1}`),
-      year: Array.from({ length: 12 }, (_, i) => `Month ${i + 1}`),
-    };
+    function getPeriodLabels(duration) {
+      // Map custom durations to label arrays
+      const map = {
+        '1d': ['Morning', 'Afternoon', 'Evening'],
+        '3d': ['Day 1', 'Day 2', 'Day 3'],
+        '1w': Array.from({ length: 7 }, (_, i) => `Day ${i + 1}`),
+        '2w': Array.from({ length: 14 }, (_, i) => `Day ${i + 1}`),
+        '1m': Array.from({ length: 4 }, (_, i) => `Week ${i + 1}`),
+        '2m': Array.from({ length: 8 }, (_, i) => `Week ${i + 1}`),
+        '3m': Array.from({ length: 12 }, (_, i) => `Week ${i + 1}`),
+        '6m': Array.from({ length: 6 }, (_, i) => `Month ${i + 1}`),
+        '1y': Array.from({ length: 12 }, (_, i) => `Month ${i + 1}`),
+        '2y': Array.from({ length: 24 }, (_, i) => `Month ${i + 1}`),
+        '5y': Array.from({ length: 20 }, (_, i) => `Quarter ${i + 1}`),
+      };
+      return map[duration] || map['1w'];
+    }
 
     function loadRoadmap() {
       const goal = storage.getGoal();
-      const pathway = storage.getPathway();
       currentDuration = storage.getCurrentDuration();
 
-      if (!goal || !pathway) {
+      if (!goal) {
         window.location.href = 'index.html';
         return;
       }
 
-      // Load all roadmaps
-      roadmaps.day = storage.getRoadmapForDuration('day');
-      roadmaps.week = storage.getRoadmapForDuration('week');
-      roadmaps.month = storage.getRoadmapForDuration('month');
-      roadmaps.year = storage.getRoadmapForDuration('year');
+      roadmap = storage.getRoadmapForDuration(currentDuration);
 
-      if (!roadmaps[currentDuration]) {
+      if (!roadmap) {
         window.location.href = 'index.html';
         return;
       }
 
-      document.getElementById('pathwayDisplay').textContent = `Pathway: ${pathway}`;
-      renderDurationTabs();
+      document.getElementById('pathwayDisplay').textContent = `Duration: ${currentDuration}`;
       renderPeriodButtons();
       renderPeriod(currentPeriod);
     }
-
-    function renderDurationTabs() {
-      const tabsDiv = document.getElementById('durationTabs');
-      const durations = ['day', 'week', 'month', 'year'];
-      const labels = { day: '1 Day', week: '1 Week', month: '1 Month', year: '1 Year' };
-
-      tabsDiv.innerHTML = durations.map((d) => `
-        <button class="duration-tab ${d === currentDuration ? 'active' : ''}" onclick="switchDuration('${d}')">
-          ${labels[d]}
-        </button>
-      `).join('');
-    }
-
-    window.switchDuration = (duration) => {
-      currentDuration = duration;
-      currentPeriod = 1;
-      storage.setCurrentDuration(duration);
-      renderDurationTabs();
-      renderPeriodButtons();
-      renderPeriod(currentPeriod);
-    };
 
     function renderPeriodButtons() {
       const sidebar = document.getElementById('periodSidebar');
-      const roadmap = roadmaps[currentDuration];
-      const labels = durationLabels[currentDuration];
+      const labels = getPeriodLabels(currentDuration);
 
       sidebar.innerHTML = roadmap.map((period, i) => `
         <button class="day-btn ${period.period === currentPeriod ? 'active' : ''}" onclick="switchPeriod(${period.period})">
-          ${labels[i]}
+          ${labels[i] || `Period ${i + 1}`}
         </button>
       `).join('');
     }
@@ -165,14 +145,12 @@
     };
 
     function allTasksCompleted(period) {
-      const roadmap = roadmaps[currentDuration];
       const periodData = roadmap.find((p) => p.period === period);
       if (!periodData) return false;
       return periodData.tasks.every((_, i) => storage.isTaskCompletedForDuration(currentDuration, period, i));
     }
 
     function renderPeriod(period) {
-      const roadmap = roadmaps[currentDuration];
       const periodData = roadmap.find((p) => p.period === period);
       if (!periodData) return;
 
@@ -261,7 +239,6 @@
     };
 
     window.goToNextPeriod = () => {
-      const roadmap = roadmaps[currentDuration];
       const maxPeriod = roadmap.length;
 
       if (currentPeriod < maxPeriod) {

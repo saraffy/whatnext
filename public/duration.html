@@ -5,13 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Choose Duration</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .duration-presets {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .duration-preset {
+      padding: 0.75rem 1.5rem;
+      background: #1a1a1a;
+      border: 2px solid #333;
+      color: #aaa;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .duration-preset:hover {
+      border-color: #4f8ef7;
+      color: #4f8ef7;
+    }
+
+    .duration-preset.active {
+      background: #4f8ef7;
+      border-color: #4f8ef7;
+      color: #fff;
+    }
+
+    .duration-label {
+      color: #999;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Choose Your Roadmap Duration</h1>
-    <p class="subtitle">How much time do you have to dedicate to this goal?</p>
+    <p class="subtitle">How long do you want to dedicate to this goal?</p>
 
-    <div class="duration-grid" id="durationGrid"></div>
+    <label class="duration-label">Quick presets:</label>
+    <div class="duration-presets" id="durationPresets"></div>
 
     <div id="error" class="error" style="display: none;"></div>
   </div>
@@ -26,53 +69,38 @@
       }
     });
 
-    const durations = [
-      {
-        duration: 'day',
-        title: '1 Day',
-        description: 'Quick win with morning, afternoon, and evening blocks',
-        emoji: '⚡',
-      },
-      {
-        duration: 'week',
-        title: '1 Week',
-        description: 'Balanced 7-day journey with daily themes',
-        emoji: '📅',
-      },
-      {
-        duration: 'month',
-        title: '1 Month',
-        description: '4 weeks of focused work on major milestones',
-        emoji: '🎯',
-      },
-      {
-        duration: 'year',
-        title: '1 Year',
-        description: 'Ambitious 12-month roadmap with deep progress',
-        emoji: '🚀',
-      },
+    const presets = [
+      { id: '1d', label: '1 Day' },
+      { id: '3d', label: '3 Days' },
+      { id: '1w', label: '1 Week' },
+      { id: '2w', label: '2 Weeks' },
+      { id: '1m', label: '1 Month' },
+      { id: '3m', label: '3 Months' },
+      { id: '6m', label: '6 Months' },
+      { id: '1y', label: '1 Year' },
+      { id: '2y', label: '2 Years' },
+      { id: '5y', label: '5 Years' },
     ];
+
+    let selectedDuration = '1w';
 
     function loadDuration() {
       const goal = storage.getGoal();
-      const pathway = storage.getPathway();
 
-      if (!goal || !pathway) {
+      if (!goal) {
         window.location.href = 'index.html';
         return;
       }
 
-      renderDurations();
+      renderPresets();
     }
 
-    function renderDurations() {
-      const durationGrid = document.getElementById('durationGrid');
-      durationGrid.innerHTML = durations.map((d) => `
-        <div class="duration-card" onclick="selectDuration('${d.duration}')">
-          <span class="duration-emoji">${d.emoji}</span>
-          <div class="duration-title">${d.title}</div>
-          <div class="duration-description">${d.description}</div>
-        </div>
+    function renderPresets() {
+      const presetsDiv = document.getElementById('durationPresets');
+      presetsDiv.innerHTML = presets.map((p) => `
+        <button type="button" class="duration-preset ${p.id === selectedDuration ? 'active' : ''}" onclick="selectDuration('${p.id}')">
+          ${p.label}
+        </button>
       `).join('');
     }
 
@@ -80,21 +108,20 @@
       const goal = storage.getGoal();
       const braindump = localStorage.getItem('wdid_braindump') || '';
       const errorDiv = document.getElementById('error');
-      const durationGrid = document.getElementById('durationGrid');
+      const presetsDiv = document.getElementById('durationPresets');
+
+      selectedDuration = duration;
+      renderPresets();
 
       // Show loading state
-      durationGrid.innerHTML = `
-        <div class="loading-container">
-          <div class="spinner"></div>
-          Generating your roadmap...
-        </div>
-      `;
+      presetsDiv.style.opacity = '0.5';
+      presetsDiv.style.pointerEvents = 'none';
       errorDiv.style.display = 'none';
 
       try {
         storage.setCurrentDuration(duration);
 
-        // Generate roadmap for selected duration only
+        // Generate roadmap for selected duration
         const roadmap = await api.generateRoadmap(goal, braindump, duration);
         storage.setRoadmapForDuration(duration, roadmap.roadmap);
 
@@ -103,8 +130,9 @@
         errorDiv.textContent = 'Failed to generate roadmap. Please try again.';
         errorDiv.style.display = 'block';
         console.error(err);
-        // Restore durations on error
-        renderDurations();
+        // Restore presets on error
+        presetsDiv.style.opacity = '1';
+        presetsDiv.style.pointerEvents = 'auto';
       }
     };
 
