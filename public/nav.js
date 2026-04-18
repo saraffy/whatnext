@@ -5,7 +5,7 @@ function setupNav() {
       <div class="nav-container">
         <div class="nav-brand">
           <a href="index.html" style="text-decoration: none; display: inline-block;">
-            <img src="logo.svg" alt="WhatNext" style="height:36px;width:auto;display:block;">
+            <img src="logo.svg" alt="WhatNext" style="height:48px;width:auto;display:block;">
           </a>
         </div>
         <div class="nav-links">
