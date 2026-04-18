@@ -9,6 +9,12 @@ const client = new Anthropic({
 });
 
 app.use(express.json());
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
 const TASK_HELP_PROMPT = `You are a task assistance engine. Given a goal, task, and task type, provide:

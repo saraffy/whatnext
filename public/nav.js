@@ -4,8 +4,9 @@ function setupNav() {
     <nav class="global-nav">
       <div class="nav-container">
         <div class="nav-brand">
-          <a href="index.html" style="text-decoration: none; display: inline-block;">
-            <img src="logo.svg" alt="WhatNext" style="height:48px;width:auto;display:block;">
+          <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 0.75rem;">
+            <img src="logo-small.svg" alt="WhatNext" style="height:40px;width:auto;">
+            <span style="font-family: 'Arimo', Arial, sans-serif; font-size: 1.1rem; font-weight: 600; color: #1a1a1a;">WhatNext</span>
           </a>
         </div>
         <div class="nav-links">
