@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatNext</title>
+  <link rel="icon" type="image/svg+xml" href="logo-small.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container" style="justify-content: flex-start; padding-top: 2rem;">
+    <div style="text-align:center; margin-bottom: 1.5rem;">
+      <img src="logo-large.svg" alt="WhatNext" style="height:200px; width:auto;">
+    </div>
+
+    <h1 style="text-align:center; margin-bottom:0.5rem;">About WhatNext</h1>
+    <p class="subtitle" style="text-align:center; margin-bottom:2.5rem;">
+      Built for people who have big goals and need a clear path forward.
+    </p>
+
+    <div class="about-content">
+      <section class="about-section">
+        <h2>What is WhatNext?</h2>
+        <p>WhatNext is an intelligent goal-planning companion that transforms your ambitions into structured, actionable roadmaps. Whether you want to start a business, write a book, get fit, or change your career, WhatNext breaks the journey down into clear, manageable steps — from a single day all the way to five years. No vague advice, no generic to-do lists. Just a personalised plan built around you.</p>
+      </section>
+
+      <section class="about-section">
+        <h2>Why was it created?</h2>
+        <p>Most people don't fail at their goals because they lack motivation — they fail because they don't know where to start. WhatNext was created to close the gap between ambition and action. The idea was simple: what if anyone could sit down, type out their dream, and walk away with a concrete roadmap in minutes? By combining the reasoning power of AI with an intuitive planning structure, WhatNext gives every goal the clarity it deserves.</p>
+      </section>
+
+      <section class="about-section">
+        <h2>What can it do?</h2>
+        <p>WhatNext generates personalised roadmaps across ten timeframes — from 1 day to 5 years — and lets you drill into finer detail for longer plans. Each roadmap is broken into themed periods with specific, time-boxed tasks. You can track your progress as you complete each step, get AI-powered step-by-step guidance on any task, and manage multiple goals simultaneously. Every plan is built around your context — share what you know, what you've tried, and what constraints you have, and WhatNext tailors the roadmap accordingly.</p>
+      </section>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="nav.js"></script>
+  <script type="module">
+    import { auth, onAuthStateChanged } from './firebase-config.js';
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</body>
+</html>

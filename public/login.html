@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - What Do I Do Next?</title>
+  <title>Login - WhatNext</title>
+  <link rel="icon" type="image/svg+xml" href="logo-small.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
     .auth-container {
@@ -11,81 +16,83 @@
       margin: 0 auto;
     }
     .auth-form {
-      background: #1a1a1a;
+      background: #EEE8DE;
       padding: 2rem;
       border-radius: 8px;
-      border: 2px solid #333;
+      border: 2px solid #D0C8BC;
     }
     .auth-form h2 {
       margin-bottom: 1.5rem;
-      color: #4f8ef7;
+      color: #2d2d2d;
       text-align: center;
     }
     .auth-form input {
       width: 100%;
       padding: 0.75rem;
       margin-bottom: 1rem;
-      background: #222;
-      border: 1px solid #333;
+      background: #FBF7F0;
+      border: 1px solid #D0C8BC;
       border-radius: 6px;
-      color: #e8e8e8;
+      color: #1a1a1a;
       font-size: 1rem;
       box-sizing: border-box;
     }
     .auth-form input:focus {
       outline: none;
-      border-color: #4f8ef7;
+      border-color: #2d2d2d;
     }
     .auth-form button {
       width: 100%;
       padding: 0.75rem;
       margin-bottom: 1rem;
-      background: #4f8ef7;
-      color: white;
+      background: #2d2d2d;
+      color: #F5EFE6;
       border: none;
       border-radius: 6px;
       font-weight: 600;
+      font-family: 'Arimo', Arial, sans-serif;
       cursor: pointer;
       transition: background 0.2s;
     }
     .auth-form button:hover {
-      background: #3d7dd4;
+      background: #1a1a1a;
     }
     .divider {
       text-align: center;
       margin: 1.5rem 0;
-      color: #666;
+      color: #8a8a8a;
       font-size: 0.9rem;
     }
     .google-btn {
-      background: white;
-      color: #333;
+      background: #FBF7F0;
+      color: #1a1a1a;
       padding: 0.75rem;
-      border: none;
+      border: 1px solid #D0C8BC;
       border-radius: 6px;
       font-weight: 600;
+      font-family: 'Arimo', Arial, sans-serif;
       cursor: pointer;
       width: 100%;
       transition: background 0.2s;
     }
     .google-btn:hover {
-      background: #f0f0f0;
+      background: #E5DDD1;
     }
     .toggle-form {
       text-align: center;
       margin-top: 1rem;
-      color: #aaa;
+      color: #5a5a5a;
       font-size: 0.9rem;
     }
     .toggle-form a {
-      color: #4f8ef7;
+      color: #2d2d2d;
       cursor: pointer;
       text-decoration: underline;
     }
     .error {
-      background: #3d1f1f;
-      border: 1px solid #8b3333;
-      color: #ff6b6b;
+      background: #fce8e8;
+      border: 1px solid #c09090;
+      color: #8b2020;
       padding: 0.75rem;
       border-radius: 6px;
       margin-bottom: 1rem;
@@ -95,8 +102,8 @@
       display: inline-block;
       width: 16px;
       height: 16px;
-      border: 2px solid #666;
-      border-top-color: #4f8ef7;
+      border: 2px solid #D0C8BC;
+      border-top-color: #2d2d2d;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
       margin-right: 0.5rem;
@@ -108,6 +115,10 @@
   </style>
 </head>
 <body>
+  <div style="text-align:center; padding-top:2rem; margin-bottom:1.5rem;">
+    <img src="logo-large.svg" alt="WhatNext" style="height:160px; width:auto;">
+  </div>
+
   <div class="container">
     <div class="auth-container">
       <div class="auth-form">

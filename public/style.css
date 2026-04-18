@@ -852,3 +852,33 @@ button:disabled {
     font-size: 0.85rem;
   }
 }
+
+/* About page styles */
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.about-section {
+  background: #EEE8DE;
+  border: 1px solid #D0C8BC;
+  border-radius: 8px;
+  padding: 1.75rem;
+}
+
+.about-section h2 {
+  font-family: 'Arimo', Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d2d2d;
+  margin-bottom: 0.75rem;
+}
+
+.about-section p {
+  color: #5a5a5a;
+  line-height: 1.9;
+  font-size: 1rem;
+}

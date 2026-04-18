@@ -13,6 +13,7 @@ function setupNav() {
           <a href="index.html" class="nav-link" id="homeLink">Home</a>
           <a href="goals.html" class="nav-link" id="goalsLink">Goals</a>
           <a href="profile.html" class="nav-link" id="profileLink">Profile</a>
+          <a href="about.html" class="nav-link" id="aboutLink">About</a>
           <button onclick="logoutNav()" class="nav-logout">Logout</button>
         </div>
       </div>
@@ -31,6 +32,8 @@ function setupNav() {
     document.getElementById('goalsLink')?.classList.add('active');
   } else if (path === 'profile.html') {
     document.getElementById('profileLink')?.classList.add('active');
+  } else if (path === 'about.html') {
+    document.getElementById('aboutLink')?.classList.add('active');
   }
 }
 
