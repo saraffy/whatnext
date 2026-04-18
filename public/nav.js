@@ -11,9 +11,9 @@ function setupNav() {
         </div>
         <div class="nav-links">
           <a href="index.html" class="nav-link" id="homeLink">Home</a>
+          <a href="about.html" class="nav-link" id="aboutLink">About</a>
           <a href="goals.html" class="nav-link" id="goalsLink">Goals</a>
           <a href="profile.html" class="nav-link" id="profileLink">Profile</a>
-          <a href="about.html" class="nav-link" id="aboutLink">About</a>
           <button onclick="logoutNav()" class="nav-logout">Logout</button>
         </div>
       </div>
