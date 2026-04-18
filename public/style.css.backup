@@ -43,7 +43,6 @@ h1 {
 
 input[type="text"],
 input[type="text"]:focus {
-  font-family: 'EB Garamond', Georgia, serif;
   width: 100%;
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -154,7 +153,7 @@ button:disabled {
 }
 
 .encouragement-text {
-  color: #4a7c4a;
+  color: #6bcf7f;
   font-size: 1rem;
   font-weight: 600;
   font-style: italic;
@@ -169,8 +168,8 @@ button:disabled {
 }
 
 .pathway-card {
-  background: #EEE8DE;
-  border: 2px solid #D0C8BC;
+  background: #1a1a1a;
+  border: 2px solid #333;
   border-radius: 8px;
   padding: 1.5rem;
   cursor: pointer;
@@ -178,8 +177,8 @@ button:disabled {
 }
 
 .pathway-card:hover {
-  border-color: #2d2d2d;
-  background: #E5DDD1;
+  border-color: #4f8ef7;
+  background: #222;
   transform: translateY(-2px);
 }
 
@@ -190,15 +189,13 @@ button:disabled {
 }
 
 .pathway-title {
-  font-family: 'Arimo', Arial, sans-serif;
   font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #1a1a1a;
 }
 
 .pathway-description {
-  color: #5a5a5a;
+  color: #aaa;
   font-size: 0.95rem;
 }
 
@@ -211,8 +208,8 @@ button:disabled {
 }
 
 .duration-card {
-  background: #EEE8DE;
-  border: 2px solid #D0C8BC;
+  background: #1a1a1a;
+  border: 2px solid #333;
   border-radius: 8px;
   padding: 2rem;
   cursor: pointer;
@@ -221,8 +218,8 @@ button:disabled {
 }
 
 .duration-card:hover {
-  border-color: #2d2d2d;
-  background: #E5DDD1;
+  border-color: #4f8ef7;
+  background: #222;
   transform: translateY(-2px);
 }
 
@@ -233,15 +230,14 @@ button:disabled {
 }
 
 .duration-title {
-  font-family: 'Arimo', Arial, sans-serif;
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #1a1a1a;
+  color: #e8e8e8;
 }
 
 .duration-description {
-  color: #5a5a5a;
+  color: #aaa;
   font-size: 0.85rem;
   line-height: 1.5;
 }
@@ -251,16 +247,15 @@ button:disabled {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 2rem;
-  border-bottom: 2px solid #D0C8BC;
+  border-bottom: 2px solid #333;
 }
 
 .duration-tab {
-  font-family: 'Arimo', Arial, sans-serif;
   padding: 0.75rem 1.5rem;
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
-  color: #5a5a5a;
+  color: #aaa;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -268,12 +263,12 @@ button:disabled {
 }
 
 .duration-tab:hover {
-  color: #2d2d2d;
+  color: #4f8ef7;
 }
 
 .duration-tab.active {
-  color: #2d2d2d;
-  border-bottom-color: #2d2d2d;
+  color: #4f8ef7;
+  border-bottom-color: #4f8ef7;
 }
 
 /* Calendar section */
@@ -286,7 +281,7 @@ button:disabled {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  color: #5a5a5a;
+  color: #999;
   font-size: 0.95rem;
 }
 
@@ -297,12 +292,11 @@ button:disabled {
 }
 
 .zoom-btn {
-  font-family: 'Arimo', Arial, sans-serif;
   font-size: 0.85rem;
   padding: 0.35rem 0.75rem;
   font-weight: 600;
-  background: #2d2d2d;
-  color: #FBF7F0;
+  background: #4f8ef7;
+  color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -310,15 +304,15 @@ button:disabled {
 }
 
 .zoom-btn:hover {
-  background: #1a1a1a;
+  background: #3d7dd4;
 }
 
 .zoom-btn-out {
-  background: #8a8a8a;
+  background: #555;
 }
 
 .zoom-btn-out:hover {
-  background: #8a8a8a;
+  background: #666;
 }
 
 .period-calendar {
@@ -328,8 +322,8 @@ button:disabled {
 }
 
 .cal-cell {
-  background: #EEE8DE;
-  border: 2px solid #D0C8BC;
+  background: #1a1a1a;
+  border: 2px solid #333;
   border-radius: 6px;
   padding: 1rem;
   cursor: pointer;
@@ -344,13 +338,13 @@ button:disabled {
 }
 
 .cal-cell:hover {
-  border-color: #2d2d2d;
+  border-color: #4f8ef7;
 }
 
 .cal-cell.active {
-  background: #2d2d2d;
-  border-color: #2d2d2d;
-  color: #FBF7F0;
+  background: #4f8ef7;
+  border-color: #4f8ef7;
+  color: #fff;
 }
 
 .cal-cell.active .cal-cell-label {
@@ -358,18 +352,18 @@ button:disabled {
 }
 
 .cal-cell.done {
-  border-color: #4a7c4a;
+  border-color: #6bcf7f;
 }
 
 .cal-cell-label {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #5a5a5a;
+  color: #aaa;
 }
 
 .cal-cell-check {
   font-size: 1.2rem;
-  color: #4a7c4a;
+  color: #6bcf7f;
   margin-top: 0.25rem;
 }
 
@@ -378,11 +372,10 @@ button:disabled {
 }
 
 .day-theme {
-  font-family: 'Arimo', Arial, sans-serif;
   font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
-  color: #2d2d2d;
+  color: #4f8ef7;
 }
 
 .task-list {
@@ -392,7 +385,7 @@ button:disabled {
 }
 
 .task-help-legend {
-  color: #8a8a8a;
+  color: #555;
   font-size: 0.8rem;
   margin-bottom: 0.75rem;
   font-style: italic;
@@ -402,10 +395,10 @@ button:disabled {
 .task-item {
   display: flex;
   gap: 1rem;
-  background: #EEE8DE;
+  background: #1a1a1a;
   padding: 1rem;
   border-radius: 6px;
-  border: 1px solid #D0C8BC;
+  border: 1px solid #333;
   align-items: flex-start;
   position: relative;
 }
@@ -415,11 +408,11 @@ button:disabled {
   height: 28px;
   padding: 0;
   border-radius: 50%;
-  background: #2d2d2d;
-  color: #FBF7F0;
+  background: #1e3a6e;
+  color: #7fb3f5;
   font-size: 0.9rem;
   font-weight: 600;
-  border: 1px solid #2d2d2d;
+  border: 1px solid #4f8ef7;
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.2s;
@@ -427,8 +420,8 @@ button:disabled {
 }
 
 .help-task-btn:hover {
-  background: #2d2d2d;
-  border-color: #2d2d2d;
+  background: #4f8ef7;
+  border-color: #4f8ef7;
   color: #fff;
 }
 
@@ -437,18 +430,18 @@ button:disabled {
   height: 20px;
   margin-top: 2px;
   cursor: pointer;
-  accent-color: #2d2d2d;
+  accent-color: #4f8ef7;
   flex-shrink: 0;
 }
 
 .task-item input[type="checkbox"]:checked + .task-text {
-  color: #8a8a8a;
+  color: #666;
   text-decoration: line-through;
 }
 
 .task-text {
   flex: 1;
-  color: #1a1a1a;
+  color: #e8e8e8;
   transition: color 0.2s;
 }
 
@@ -460,7 +453,7 @@ button:disabled {
 
 .task-duration {
   display: inline-block;
-  background: #2d2d2d;
+  background: #4f8ef7;
   color: #fff;
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
@@ -470,15 +463,15 @@ button:disabled {
 
 .task-type {
   display: inline-block;
-  background: #D0C8BC;
-  color: #5a5a5a;
+  background: #333;
+  color: #aaa;
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-size: 0.8rem;
 }
 
 .stuck-button {
-  background: #8a8a8a;
+  background: #666;
 }
 
 .stuck-button:hover {
@@ -486,16 +479,16 @@ button:disabled {
 }
 
 .next-day-button {
-  background: #2d2d2d;
+  background: #4f8ef7;
 }
 
 .next-day-button:hover {
-  background: #1a1a1a;
+  background: #3d7dd4;
 }
 
 .loading {
   text-align: center;
-  color: #2d2d2d;
+  color: #4f8ef7;
   font-weight: 600;
 }
 
@@ -513,8 +506,8 @@ button:disabled {
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid #8a8a8a;
-  border-top-color: #2d2d2d;
+  border: 2px solid #666;
+  border-top-color: #4f8ef7;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
   margin-right: 0.5rem;
@@ -528,7 +521,7 @@ button:disabled {
 .loading-container {
   text-align: center;
   padding: 3rem 2rem;
-  color: #2d2d2d;
+  color: #4f8ef7;
   font-weight: 600;
   font-size: 1.1rem;
 }
@@ -556,7 +549,7 @@ button:disabled {
   position: absolute;
   width: 10px;
   height: 10px;
-  background: #2d2d2d;
+  background: #4f8ef7;
   border-radius: 50%;
   top: -10px;
 }
@@ -572,7 +565,7 @@ button:disabled {
 }
 
 .confetti-piece:nth-child(3n) {
-  background: #4a7c4a;
+  background: #6bcf7f;
 }
 
 .confetti-piece:nth-child(4n) {
@@ -599,7 +592,7 @@ button:disabled {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #2d2d2d;
+  background: #4f8ef7;
   color: white;
   padding: 2rem 3rem;
   border-radius: 12px;
@@ -637,8 +630,8 @@ button:disabled {
   top: 0;
   width: 400px;
   height: 100vh;
-  background: #EEE8DE;
-  border-left: 2px solid #D0C8BC;
+  background: #1a1a1a;
+  border-left: 2px solid #333;
   z-index: 9998;
   transition: right 0.3s ease;
   overflow-y: auto;
@@ -655,12 +648,12 @@ button:disabled {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 2px solid #D0C8BC;
+  border-bottom: 2px solid #333;
 }
 
 .help-panel-header h3 {
   margin: 0;
-  color: #2d2d2d;
+  color: #4f8ef7;
   font-size: 1.2rem;
 }
 
@@ -668,9 +661,9 @@ button:disabled {
   width: 32px;
   height: 32px;
   padding: 0;
-  background: #D0C8BC;
+  background: #333;
   border: none;
-  color: #5a5a5a;
+  color: #aaa;
   font-size: 1.5rem;
   cursor: pointer;
   border-radius: 4px;
@@ -691,7 +684,7 @@ button:disabled {
 }
 
 .help-steps strong {
-  color: #1a1a1a;
+  color: #e8e8e8;
   font-size: 0.95rem;
   display: block;
   margin-bottom: 0.5rem;
@@ -699,7 +692,7 @@ button:disabled {
 
 .help-steps ol {
   margin-left: 1.5rem;
-  color: #5a5a5a;
+  color: #ccc;
   line-height: 1.8;
 }
 
@@ -708,7 +701,7 @@ button:disabled {
 }
 
 .help-resources strong {
-  color: #1a1a1a;
+  color: #e8e8e8;
   font-size: 0.95rem;
   display: block;
   margin-bottom: 0.75rem;
@@ -717,11 +710,11 @@ button:disabled {
 .resource-card {
   display: flex;
   gap: 0.75rem;
-  background: #E5DDD1;
+  background: #222;
   padding: 0.75rem;
   border-radius: 6px;
   margin-bottom: 0.75rem;
-  border: 1px solid #D0C8BC;
+  border: 1px solid #333;
 }
 
 .resource-card span {
@@ -731,21 +724,21 @@ button:disabled {
 }
 
 .resource-title {
-  color: #1a1a1a;
+  color: #e8e8e8;
   font-weight: 500;
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
 }
 
 .resource-desc {
-  color: #5a5a5a;
+  color: #999;
   font-size: 0.8rem;
   margin-bottom: 0.5rem;
   line-height: 1.4;
 }
 
 .resource-link {
-  color: #2d2d2d;
+  color: #4f8ef7;
   font-size: 0.8rem;
   text-decoration: none;
   cursor: pointer;
@@ -770,7 +763,7 @@ button:disabled {
 }
 
 .modal-content {
-  background: #EEE8DE;
+  background: #1a1a1a;
   border-radius: 12px;
   padding: 2.5rem;
   max-width: 600px;
@@ -778,16 +771,16 @@ button:disabled {
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  border: 2px solid #D0C8BC;
+  border: 2px solid #333;
 }
 
 .modal-close {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: #D0C8BC;
+  background: #333;
   border: none;
-  color: #1a1a1a;
+  color: #e8e8e8;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -805,12 +798,12 @@ button:disabled {
 
 .modal-content h2 {
   margin-bottom: 1rem;
-  color: #2d2d2d;
+  color: #4f8ef7;
   font-size: 1.5rem;
 }
 
 .modal-content p {
-  color: #5a5a5a;
+  color: #ccc;
   line-height: 1.8;
   margin-bottom: 1rem;
 }

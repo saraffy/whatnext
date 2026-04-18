@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WhatNext</title>
+  <link rel="icon" type="image/png" href="logo.png">
   <link rel="stylesheet" href="style.css">
   <style>
     .braindump-container {
@@ -13,36 +14,37 @@
 
     .goal-header {
       font-size: 1.1rem;
-      color: #999;
+      color: #5a5a5a;
       margin-bottom: 0.5rem;
       text-align: center;
     }
 
     .goal-text {
+      font-family: 'Arimo', Arial, sans-serif;
       font-size: 1.5rem;
       font-weight: 600;
-      color: #4f8ef7;
+      color: #2d2d2d;
       margin-bottom: 2rem;
       text-align: center;
     }
 
     .braindump-prompt {
-      color: #ccc;
+      color: #5a5a5a;
       text-align: center;
       margin-bottom: 1.5rem;
       font-size: 0.95rem;
     }
 
     textarea {
+      font-family: 'EB Garamond', Georgia, serif;
       width: 100%;
       min-height: 250px;
       padding: 1rem;
-      background: #1a1a1a;
-      border: 2px solid #333;
+      background: #FBF7F0;
+      border: 2px solid #D0C8BC;
       border-radius: 8px;
-      color: #e8e8e8;
+      color: #1a1a1a;
       font-size: 0.95rem;
-      font-family: inherit;
       resize: vertical;
       transition: border-color 0.2s;
       margin-bottom: 1.5rem;
@@ -51,11 +53,11 @@
 
     textarea:focus {
       outline: none;
-      border-color: #4f8ef7;
+      border-color: #2d2d2d;
     }
 
     .examples-text {
-      color: #666;
+      color: #8a8a8a;
       font-size: 0.85rem;
       font-style: italic;
       margin-bottom: 1.5rem;
@@ -69,7 +71,8 @@
     }
 
     .skip-link {
-      color: #4f8ef7;
+      font-family: 'Arimo', Arial, sans-serif;
+      color: #2d2d2d;
       cursor: pointer;
       text-decoration: underline;
       font-size: 0.95rem;
@@ -77,7 +80,7 @@
     }
 
     .skip-link:hover {
-      color: #3d7dd4;
+      color: #1a1a1a;
     }
   </style>
 </head>
@@ -132,6 +135,12 @@
         return;
       }
       goalDisplay.textContent = activeGoal.goal;
+
+      // Load previously saved braindump text if it exists
+      const savedBraindump = localStorage.getItem(`wdid_${activeId}_braindump`);
+      if (savedBraindump) {
+        braindumpText.value = savedBraindump;
+      }
     }
 
     continueBtn.addEventListener('click', () => {

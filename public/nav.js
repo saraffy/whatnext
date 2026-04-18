@@ -4,7 +4,9 @@ function setupNav() {
     <nav class="global-nav">
       <div class="nav-container">
         <div class="nav-brand">
-          <a href="index.html" style="text-decoration: none; color: #4f8ef7; font-weight: 600; font-size: 1.1rem;">🎯 WhatNext</a>
+          <a href="index.html" style="text-decoration: none; display: inline-block;">
+            <img src="logo.png" alt="WhatNext" style="height:36px;width:auto;display:block;">
+          </a>
         </div>
         <div class="nav-links">
           <a href="index.html" class="nav-link" id="homeLink">Home</a>
@@ -46,8 +48,8 @@ window.logoutNav = async function() {
 const style = document.createElement('style');
 style.textContent = `
   .global-nav {
-    background: #1a1a1a;
-    border-bottom: 2px solid #333;
+    background: #F5EFE6;
+    border-bottom: 1px solid #D8D3CA;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -73,7 +75,8 @@ style.textContent = `
   }
 
   .nav-link {
-    color: #999;
+    font-family: 'Arimo', Arial, sans-serif;
+    color: #5a5a5a;
     text-decoration: none;
     font-size: 0.95rem;
     font-weight: 500;
@@ -81,20 +84,21 @@ style.textContent = `
   }
 
   .nav-link:hover {
-    color: #4f8ef7;
+    color: #1a1a1a;
   }
 
   .nav-link.active {
-    color: #4f8ef7;
-    border-bottom: 2px solid #4f8ef7;
+    color: #1a1a1a;
+    border-bottom: 2px solid #1a1a1a;
     padding-bottom: 2px;
   }
 
   .nav-logout {
+    font-family: 'Arimo', Arial, sans-serif;
     padding: 0.5rem 1rem;
-    background: #333;
-    border: 1px solid #444;
-    color: #e8e8e8;
+    background: #2d2d2d;
+    border: none;
+    color: #F5EFE6;
     border-radius: 6px;
     font-size: 0.9rem;
     cursor: pointer;
@@ -102,8 +106,7 @@ style.textContent = `
   }
 
   .nav-logout:hover {
-    background: #444;
-    border-color: #555;
+    background: #1a1a1a;
   }
 
   body {
